@@ -15,7 +15,7 @@ This tool is used to setup and run an Invenio based NRP instance.
 1. Download the installer
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/oarepo/nrp-tools/main/nrp-installer.sh
+curl -sSL https://raw.githubusercontent.com/oarepo/nrp-devtools/main/nrp-installer.sh
 ```
 
 2. Run the installer with a directory where the repository will be created
@@ -31,4 +31,4 @@ It will also initialize git version control system and commit the initial
 sources.
 
 3. Go to the my-repo directory and see the README.md file there for further instructions
-   (or have a peek at [](src/nrp_devtools/...) )
+   (or have a peek at [README.md](https://github.com/oarepo/nrp-devtools/blob/main/src/nrp_devtools/templates/repository/%7B%7Bcookiecutter.repository_name%7D%7D/README.md) )
