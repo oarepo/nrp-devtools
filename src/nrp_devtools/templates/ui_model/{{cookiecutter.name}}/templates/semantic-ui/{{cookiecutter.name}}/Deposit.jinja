@@ -1,0 +1,7 @@
+{% raw %}{% extends "oarepo_ui/form.html" %}
+
+{%- block javascript %}
+    {{ super() }}
+    {{ webpack['{% endraw %}{{cookiecutter.name}}{% raw %}_deposit_form.js'] }}
+{%- endblock %}
+{% endraw %}
