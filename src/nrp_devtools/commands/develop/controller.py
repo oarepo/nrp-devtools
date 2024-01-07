@@ -1,7 +1,7 @@
 import click
 from pytimedinput import timedInput
 
-from nrp_devtools.commands.develop import Runner
+from .runner import Runner
 from nrp_devtools.config import OARepoConfig
 
 
@@ -17,7 +17,7 @@ def show_menu(server: bool, ui: bool, development_mode: bool):
     click.secho("")
     if server:
         click.secho("1 or server     - restart python server", fg="green")
-    if ui and not development_mode:
+    if ui and development_mode:
         click.secho("2 or ui         - restart webpack server", fg="green")
 
     click.secho("0 or stop       - stop the server (Ctrl-C also works)", fg="red")

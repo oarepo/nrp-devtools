@@ -82,7 +82,7 @@ def prompt_set_choices(enum, prompt, default=None):
     """
     print(prompt)
 
-    choices = {str(idx + 1): e for idx, e in enumerate(enum)}
+    choices = {chr(ord('A') + idx): e for idx, e in enumerate(enum)}
 
     value = set(default or {})
 
@@ -95,13 +95,15 @@ def prompt_set_choices(enum, prompt, default=None):
             print(f"{idx:5s} {tick} {c.description}")
 
         inp = click.prompt(
-            "Enter number to toggle, c to continue",
-            type=click.Choice([*choices.keys(), ""]),
+            "Enter char(s) to toggle, c to continue",
             default="",
         )
-        if inp == "":
+        if inp == "c":
             break
         else:
-            value ^= {choices[inp].value}
+            for cc in inp:
+                if cc not in choices:
+                    continue
+                value ^= {choices[cc]}
 
     return value

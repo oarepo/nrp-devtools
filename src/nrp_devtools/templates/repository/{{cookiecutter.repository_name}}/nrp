@@ -7,7 +7,7 @@ set -e
 # Environment variables
 # PYTHON:
 #              python executable to use for running the NRP tools
-# LOCAL_NRP_TOOLS_LOCATION:
+# LOCAL_NRP_DEVTOOLS_LOCATION:
 #              location of the local NRP repository.
 #              If set, do not clone the NRP repository but use the local one.
 
@@ -68,10 +68,10 @@ if [ ! -d "$devtools_cli_directory" ] ; then
   fi
   $PYTHON -m venv "${devtools_cli_directory}"
   "${devtools_cli_directory}"/bin/pip install -U setuptools pip wheel
-  if [ -z "$LOCAL_NRP_TOOLS_LOCATION" ] ; then
+  if [ -z "$LOCAL_NRP_DEVTOOLS_LOCATION" ] ; then
     "${devtools_cli_directory}"/bin/pip install nrp-devtools
   else
-    "${devtools_cli_directory}"/bin/pip install -e "$LOCAL_NRP_TOOLS_LOCATION"
+    "${devtools_cli_directory}"/bin/pip install -e "$LOCAL_NRP_DEVTOOLS_LOCATION"
   fi
 fi
 

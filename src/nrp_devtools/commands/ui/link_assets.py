@@ -10,12 +10,12 @@ from .assets import load_watched_paths
 
 
 def link_assets(config: OARepoConfig):
-    assets = (config.site_dir / "assets").resolve()
-    static = (config.site_dir / "static").resolve()
+    # assets = (config.site_dir / "assets").resolve()
+    static = (config.ui_dir / "static").resolve()
 
     watched_paths = load_watched_paths(
         config.invenio_instance_path / "watch.list.json",
-        [f"{assets}=assets", f"{static}=static"],
+        [f"{static}=static"],
     )
     kinds = {"assets", "static"}
 

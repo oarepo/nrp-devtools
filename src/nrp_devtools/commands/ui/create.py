@@ -35,7 +35,7 @@ def register_page_ui(config: OARepoConfig, *, ui_name: str):
 
     pyproject.add_entry_point(
         "invenio_base.blueprints",
-        ui_config.name,
+        f"ui_{ui_config.name}",
         f"{config.repository.ui_package}.{ui_config.name}:create_blueprint",
     )
 

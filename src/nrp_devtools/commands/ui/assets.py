@@ -2,8 +2,8 @@ import json
 import shutil
 from pathlib import Path
 
-from nrp_devtools.commands.ui import register_less_components
-from nrp_devtools.commands.utils import run_cmdline
+from .less import register_less_components
+from ..utils import run_cmdline
 
 
 def load_watched_paths(paths_json, extra_paths):
@@ -40,12 +40,6 @@ def collect_assets(config):
         "clean",
         "create",
     )
-    # shutil.copytree(
-    #     config.site_dir / "assets", invenio_instance_path / "assets", dirs_exist_ok=True
-    # )
-    # shutil.copytree(
-    #     config.site_dir / "static", invenio_instance_path / "static", dirs_exist_ok=True
-    # )
 
 
 def install_npm_packages(config):
