@@ -101,7 +101,7 @@ def create_pdm_file(config: OARepoConfig, output_directory: str):
     oarepo_dependency = [
         x
         for x in dependencies
-        if re.match(r"^\s*oarepo\s*==.*", x)  # take only oarepo package, discard others
+        if re.match(r"^\s*oarepo\s*(\[[^\]]+\])?\s*==.*", x)  # take only oarepo package, discard others
     ][0]
 
     original_pdm_file["project"]["dependencies"] = [oarepo_dependency]

@@ -152,13 +152,24 @@ def make_step(
     fun,
     *global_args,
     _if: Union[bool, Callable[[OARepoConfig], bool]] = True,
+    _swallow_errors=False,
     **global_kwargs,
 ):
     @wraps(fun)
     def step(config, **kwargs):
         should_call = _if if not callable(_if) else _if(config)
         if should_call:
-            fun(config, *global_args, **global_kwargs, **kwargs)
+            try:
+                fun(config, *global_args, **global_kwargs, **kwargs)
+            except KeyboardInterrupt:
+                raise
+            except BaseException as e:
+                if _swallow_errors:
+                    click.secho(
+                        f"Error running {fun.__name__}: {e}", fg="red", err=True
+                    )
+                else:
+                    raise
 
     return step
 

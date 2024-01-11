@@ -20,6 +20,9 @@ from .base import command_sequence, nrp_command
 @command_sequence()
 def build_command(*, config: OARepoConfig, **kwargs):
     """Builds the repository"""
+    return build_command_internal(config=config, **kwargs)
+
+def build_command_internal(*, config: OARepoConfig, **kwargs):
     return (
         no_args(
             partial(click.secho, "Building repository for production", fg="yellow")

@@ -2,6 +2,7 @@ import os
 import subprocess
 import threading
 import time
+import traceback
 from threading import RLock
 from typing import Optional
 
@@ -108,17 +109,23 @@ class Runner:
         self.stop_file_watcher()
 
     def restart_python_server(self, development_mode=False):
-        self.stop_python_server()
-        self.start_python_server(development_mode=development_mode)
+        try:
+            self.stop_python_server()
+            self.start_python_server(development_mode=development_mode)
+        except:
+            traceback.print_exc()
 
     def restart_webpack_server(self):
-        self.stop_webpack_server()
-        self.stop_file_watcher()
-        # just for being sure, link assets
-        # (they might have changed and were not registered before)
-        link_assets(self.config)
-        self.start_file_watcher()
-        self.start_webpack_server()
+        try:
+            self.stop_webpack_server()
+            self.stop_file_watcher()
+            # just for being sure, link assets
+            # (they might have changed and were not registered before)
+            link_assets(self.config)
+            self.start_file_watcher()
+            self.start_webpack_server()
+        except:
+            traceback.print_exc()
 
     def stop_python_server(self):
         click.secho("Stopping python server", fg="yellow")

@@ -1,3 +1,4 @@
+import shutil
 import sys
 from pathlib import Path
 
@@ -45,10 +46,14 @@ def link_assets(config: OARepoConfig):
 
     for kind, existing_data in existing.items():
         if existing_data:
-            click.secho(f"Error: following {kind} are not linked:", fg="red")
+            click.secho(f"Error: following {kind} are not linked, will remove those from .venv assets", fg="red")
             for target in existing_data:
-                click.secho(f"  {target}", fg="red")
-            sys.exit(1)
+                if target.exists():
+                    click.secho(f"  {target}", fg="red")
+                    if target.is_dir():
+                        shutil.rmtree(target)
+                    else:
+                        target.unlink()
 
     for kind, source_file, target_file in tqdm(
         _list_linked_files(linked), desc="Linking assets and statics"

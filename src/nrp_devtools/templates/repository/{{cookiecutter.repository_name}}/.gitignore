@@ -3,3 +3,8 @@ __pycache__
 __pypackages__
 node_modules
 *.egg-info
+.nrp
+.idea
+.pdm-build
+.vscode
+.env

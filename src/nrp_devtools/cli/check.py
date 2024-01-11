@@ -69,7 +69,7 @@ def check_commands(context, local_packages, fix):
         #
         make_step(install_local_packages, local_packages=local_packages),
         #
-        # invenio.cfg is inside virtual environment
+        # invenio.cfg and variables are inside virtual environment
         #
         run_fixup(check_invenio_cfg, install_invenio_cfg, fix=fix),
         #
