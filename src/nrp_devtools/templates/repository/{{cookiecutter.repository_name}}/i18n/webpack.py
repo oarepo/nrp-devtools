@@ -11,6 +11,7 @@ theme = WebpackThemeBundle(
             },
             "devDependencies": {},
             "aliases": {
+                "@translations/i18next": "translations/i18next.js",
             },
         }
     },

@@ -73,14 +73,14 @@ def register_model_ui(config: OARepoConfig, *, ui_name: str):
 
     pyproject.add_entry_point(
         "invenio_base.blueprints",
-        ui_config.name,
+        f"ui_{ui_config.name}",
         f"{config.repository.ui_package}.{ui_config.name}:create_blueprint",
     )
 
     pyproject.add_entry_point(
         "invenio_assets.webpack",
-        ui_config.name,
-        f"{config.repository.ui_package}.{ui_config.name}.theme.webpack:theme",
+        f"ui_{ui_config.name}",
+        f"{config.repository.ui_package}.{ui_config.name}.webpack:theme",
     )
 
     pyproject.save()

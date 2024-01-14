@@ -4,7 +4,7 @@ from oarepo_ui.resources.resource import RecordsUIResource
 
 
 class {{cookiecutter.resource_config}}(RecordsUIResourceConfig):
-    template_folder = "../templates"
+    template_folder = "templates"
     url_prefix = "{{cookiecutter.endpoint}}"
     blueprint_name = "{{cookiecutter.name}}"
     ui_serializer_class = "{{cookiecutter.ui_serializer_class}}"

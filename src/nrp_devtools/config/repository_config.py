@@ -28,6 +28,9 @@ class RepositoryConfig:
     ui_package: str
     prompts["ui_package"] = "Python package name of the ui code"
 
+    model_package: str = "models"
+    prompts["model_package"] = "Directory containing model yaml files"
+
     @classmethod
     def default_shared_package(cls, config: "OARepoConfig", values):
         """Returns the default site package name based on the project directory name"""
@@ -37,6 +40,11 @@ class RepositoryConfig:
     def default_ui_package(cls, config: "OARepoConfig", values):
         """Returns the default site package name based on the project directory name"""
         return f"ui"
+
+    @classmethod
+    def default_model_package(cls, config: "OARepoConfig", values):
+        """Returns the default package name based on the project directory name"""
+        return f"models"
 
     @classmethod
     def default_repository_package(cls, config, values):

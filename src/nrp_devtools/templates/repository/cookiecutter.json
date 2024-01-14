@@ -6,5 +6,6 @@
   "use_oarepo_vocabularies": true,
   "site_package": "",
   "ui_package": "",
+  "model_package": "",
   "oarepo_version": "12"
 }

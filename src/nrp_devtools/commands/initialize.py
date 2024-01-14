@@ -15,6 +15,7 @@ def initialize_repository(config: OARepoConfig):
             "repository_package": config.repository.repository_package,
             "repository_human_name": config.repository.repository_human_name,
             "ui_package": config.repository.ui_package,
+            "model_package": config.repository.model_package,
             "oarepo_version": config.repository.oarepo_version,
         },
     )

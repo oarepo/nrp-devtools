@@ -16,7 +16,6 @@ theme = WebpackThemeBundle(
                 "../../less/site": "less/site",
                 "../../less": "less",
                 "@less": "less",
-                "@translations/i18next": "translations/i18next.js",
             },
         }
     },

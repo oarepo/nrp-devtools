@@ -67,7 +67,7 @@ class OARepoConfig:
 
     @property
     def models_dir(self):
-        return self.repository_dir / "models"
+        return self.repository_dir / self.repository.model_package
 
     @property
     def invenio_instance_path(self):
