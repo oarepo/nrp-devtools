@@ -1,6 +1,6 @@
 [project]
 name = "nrp-devtools"
-version = "0.1.2"
+version = "0.1.3"
 description = "NRP repository development tools"
 readme = "README.md"
 authors = [

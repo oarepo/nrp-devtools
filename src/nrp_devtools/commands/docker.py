@@ -17,6 +17,18 @@ from .check import check_failed
 from .invenio import get_invenio_configuration, get_repository_info
 
 
+def check_docker_env(config: OARepoConfig, **kwargs):
+    if not (config.repository_dir / "docker" / ".env").exists():
+        check_failed(
+            "Docker environment file is missing. Please run this command with --fix to fix the problem."
+        )
+
+def fix_docker_env(config: OARepoConfig, **kwargs):
+    (config.repository_dir / "docker" / ".env").symlink_to(
+        config.repository_dir / "variables"
+    )
+
+
 def check_docker_callable(config: OARepoConfig):
     try:
         run_cmdline("docker", "ps", grab_stdout=True, raise_exception=True)

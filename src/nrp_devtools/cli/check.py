@@ -10,7 +10,7 @@ from ..commands.docker import (
     check_docker_compose_version,
     check_node_version,
     check_npm_version,
-    fix_containers,
+    fix_containers, fix_docker_env, check_docker_env,
 )
 from ..commands.invenio import check_invenio_cfg, install_invenio_cfg
 from ..commands.opensearch import check_search, fix_custom_fields, fix_search
@@ -51,6 +51,7 @@ def check_commands(context, local_packages, fix):
         # infrastructure checks
         #
         no_args(partial(click.secho, "Checking repository requirements", fg="yellow")),
+        run_fixup(check_docker_env, fix_docker_env, fix=fix),
         check_docker_callable,
         make_step(check_docker_compose_version, expected_major=1, expected_minor=17),
         make_step(check_node_version, supported_versions=(14, 16, 20, 21)),
