@@ -92,6 +92,9 @@ def check_invenio_callable(config, **kwargs):
 def install_python_repository(config, **kwargs):
     run_pdm(config, "install", "--dev", "--no-lock")
 
+    # fixup for uritemplate / uritemplate.py
+    run_cmdline(config.venv_dir / "bin" / "pip", "install", "-U",
+                "--force-reinstall", "--upgrade-strategy", "eager", "uritemplate")
 
 def create_pdm_file(config: OARepoConfig, output_directory: str):
     original_pdm_file = tomli.loads(

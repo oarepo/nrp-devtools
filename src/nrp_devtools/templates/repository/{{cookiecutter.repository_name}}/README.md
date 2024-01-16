@@ -7,7 +7,6 @@ The repository contains the following files and directories:
 
 - `oarepo.yaml` - the main configuration file for the repository
 - `pyproject.toml` - python dependencies and plugins
-- `site` - directory with the site sources, including styles, images, fonts, and docker files
 - `ui` - directory containing the UI sources, such as title page, search page, record detail page, etc.
   - `ui/branding` - branding information, including colors, logo, favicon etc.
 - `models` - directory containing the metadata schemas
