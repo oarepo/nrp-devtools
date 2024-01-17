@@ -206,7 +206,7 @@ def create_less_component(config: OARepoConfig, component_type, component_name, 
 
         # add the component to the registration file
         registration_less_data = registration_less_file.read_text()
-        registration_less_data += f'\n@import "@less/{ui_name}/definitions/{component_type_plural}/{component_name}";'
+        registration_less_data += f'\n& {{\n @import "@less/{ui_name}/definitions/{component_type_plural}/{component_name}"; \n}}'
         registration_less_file.write_text(registration_less_data)
 
     def create_jinjax_component(*args, **kwargs):
