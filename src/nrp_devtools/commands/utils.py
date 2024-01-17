@@ -6,6 +6,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Callable, Union
 
+import caseconverter
 import click
 from cookiecutter.main import cookiecutter
 
@@ -196,3 +197,8 @@ def run_fixup(check_function, fix_function, fix=True, **global_kwargs):
             check_function(config, fast_fail=False, **kwargs, **global_kwargs)
 
     return _run_fixup
+
+
+def capitalize_name(name):
+    capitalized_name = caseconverter.camelcase(name)
+    return capitalized_name[0].upper() + capitalized_name[1:]

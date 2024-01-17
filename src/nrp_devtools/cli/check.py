@@ -30,6 +30,7 @@ from ..commands.s3 import (
     fix_s3_location_in_database,
 )
 from ..commands.ui import check_ui, fix_ui
+from ..commands.ui.assets import register_less_components
 from ..commands.utils import make_step, no_args, run_fixup
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command

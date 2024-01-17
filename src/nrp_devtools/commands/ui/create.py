@@ -3,7 +3,7 @@ from pathlib import Path
 import caseconverter
 
 from nrp_devtools.commands.pyproject import PyProject
-from nrp_devtools.commands.utils import run_cookiecutter
+from nrp_devtools.commands.utils import run_cookiecutter, capitalize_name
 from nrp_devtools.config import OARepoConfig
 
 
@@ -13,8 +13,7 @@ def create_page_ui(config: OARepoConfig, *, ui_name: str):
     if (config.ui_dir / ui_config.name).exists():
         return
 
-    capitalized_name = caseconverter.camelcase(ui_config.name)
-    capitalized_name = capitalized_name[0].upper() + capitalized_name[1:]
+    capitalized_name = capitalize_name(ui_config.name)
 
     run_cookiecutter(
         config.ui_dir,

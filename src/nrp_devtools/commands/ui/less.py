@@ -7,14 +7,14 @@ from nrp_devtools.config import OARepoConfig
 
 
 def register_less_components(config: OARepoConfig, invenio_instance_path):
-    run_cmdline(
+    data = run_cmdline(
         config.invenio_command,
         "oarepo",
         "assets",
         "less-components",
-        f"{invenio_instance_path}/less-components.json",
+        grab_stdout=True,
     )
-    data = json.loads(Path(f"{invenio_instance_path}/less-components.json").read_text())
+    data = json.loads(data)
     components = list(set(data["components"]))
     theme_config_file = (
         config.ui_dir / "branding" / config.theme_dir_name / "less" / "theme.config"

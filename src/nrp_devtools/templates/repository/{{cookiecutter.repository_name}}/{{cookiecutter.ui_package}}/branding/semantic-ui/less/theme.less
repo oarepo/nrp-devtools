@@ -59,6 +59,12 @@ Sample output:
 /* Invenio-theme Theme for a component */
 @import (optional, multiple) 'themes/invenio/@{type}s/@{element}.variables';
 
+/* Components folder inside ui */
+@import (optional, multiple) '@{siteFolder}/components/default/@{type}s/@{element}.variables';
+
+/* Components folder inside ui */
+@import (optional, multiple) '@{siteFolder}/components/@{theme}/@{type}s/@{element}.variables';
+
 /* Site default theme for a component */
 @import (optional, multiple) '@{siteFolder}/default/@{type}s/@{element}.variables';
 
@@ -91,6 +97,9 @@ Sample output:
 
   /* invenio global css styles */
   @import (optional, multiple) 'themes/invenio/@{type}s/@{element}.overrides';
+
+  /* components overrides theme css style */
+  @import (optional, multiple) '@{siteFolder}/components/@{theme}/@{type}s/@{element}.overrides';
 
   /* site theme css style */
   @import (optional, multiple) '@{siteFolder}/@{theme}/@{type}s/@{element}.overrides';

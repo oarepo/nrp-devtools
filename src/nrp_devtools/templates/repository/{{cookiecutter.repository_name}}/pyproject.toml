@@ -20,10 +20,12 @@ requires-python = ">=3.9,<3.11"
 [project.entry-points."invenio_assets.webpack"]
 branding = "{{cookiecutter.ui_package}}.branding.webpack:theme"
 i18n = "i18n.webpack:theme"
+components = "{{cookiecutter.ui_package}}.components.webpack:theme"
 
 [project.entry-points."invenio_base.blueprints"]
 branding = "{{cookiecutter.ui_package}}.branding:create_blueprint"
 titlepage = "{{cookiecutter.ui_package}}.titlepage:create_blueprint"
+components = "{{cookiecutter.ui_package}}.components:create_blueprint"
 
 [project.entry-points."invenio_i18n.translations"]
 translations = "i18n"

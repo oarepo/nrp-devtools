@@ -1,6 +1,8 @@
 import json
+from pathlib import Path
 
 import click
+import cookiecutter
 
 from ..commands.ui.create import (
     create_model_ui,
@@ -8,7 +10,7 @@ from ..commands.ui.create import (
     register_model_ui,
     register_page_ui,
 )
-from ..commands.utils import make_step
+from ..commands.utils import make_step, run_cookiecutter, capitalize_name
 from ..config import OARepoConfig
 from ..config.ui_config import UIConfig
 from .base import command_sequence, nrp_command
@@ -144,3 +146,89 @@ def create_model(config: OARepoConfig, model_name, ui_name, ui_endpoint, **kwarg
         make_step(create_model_ui, ui_name=ui_name),
         make_step(register_model_ui, ui_name=ui_name),
     )
+
+
+@ui_group.group(name="components")
+def components_group(*args, **kwargs):
+    pass
+
+
+@components_group.command(
+    name="create",
+    help="""Create a new less component.  
+The component-type is the type of the component, such as element, view, module, or collection.
+The component-name is the name of the component, such as navbar or footer.
+    """,
+)
+@click.argument("component-type")
+@click.argument("component-name")
+@click.option("--jinjax/--no-jinjax", default=True, help="Generate jinjax template as well")
+@command_sequence()
+def create_less_component(config: OARepoConfig, component_type, component_name, jinjax, **kwargs):
+    ui_name = "components"
+    # if the config.ui_dir/ui_name does not exist, run cookiecutter to create it
+    ui_dir = config.ui_dir / ui_name
+
+    def create_less_component(*args, **kwargs):
+
+        # files and directories
+        less_dir = ui_dir / "semantic-ui" / "less"
+        definitions_dir = less_dir / ui_name / "definitions"
+        default_theme_dir = less_dir / ui_name / "default"
+        registration_less_file = less_dir / ui_name / "custom-components.less"
+
+        component_type_plural = component_type + "s"
+
+        component_file = definitions_dir / component_type_plural / f"{component_name}.less"
+        component_variables_file = default_theme_dir / component_type_plural / f"{component_name}.variables"
+        component_overrides_file = default_theme_dir / component_type_plural / f"{component_name}.overrides"
+
+        # create variable and override files
+        component_variables_file.parent.mkdir(parents=True, exist_ok=True)
+        component_variables_file.write_text(f"""
+/* https://github.com/Semantic-Org/example-github/blob/master/semantic/src/themes/default/globals/site.variables */
+/* @{component_name}Background: @inputBackground; */
+        """)
+        click.secho(f"Place variables that parametrize the component inside {component_variables_file}",
+                    fg="green")
+
+        component_overrides_file.parent.mkdir(parents=True, exist_ok=True)
+        component_overrides_file.touch()
+
+        # create the component
+        less_data = (Path(__file__).parent.parent / "templates" / "component.less").read_text()
+        less_data = less_data.replace('{{component_type}}', component_type)
+        less_data = less_data.replace('{{component_name}}', component_name)
+
+        component_file.parent.mkdir(parents=True, exist_ok=True)
+        component_file.write_text(less_data)
+        click.secho(f"Put the default css to {component_file}", fg="green")
+
+        # add the component to the registration file
+        registration_less_data = registration_less_file.read_text()
+        registration_less_data += f'\n@import "@less/{ui_name}/definitions/{component_type_plural}/{component_name}";'
+        registration_less_file.write_text(registration_less_data)
+
+    def create_jinjax_component(*args, **kwargs):
+        if not jinjax:
+            return
+        component_name_capitalized = capitalize_name(component_name)
+        jinjax_component_file = ui_dir / "templates" / ui_name / f"{component_name_capitalized}.jinja"
+
+        jinjax_component_file.parent.mkdir(parents=True, exist_ok=True)
+        jinjax_component_file.write_text(f"""{{# def #}}
+<div class="ui {component_name}">
+  Overwrite this file with your own jinja template.
+</div>
+        """)
+        click.secho(f"Place the HTML code of the component to {jinjax_component_file} "
+                    f"and reference it from elsewhere as <components.{component_name_capitalized} /> or <{component_name_capitalized} />. "
+                    f"Do not forget to put css classes 'ui {component_name}' to the root element of the template.",
+                    fg="green")
+
+    return (
+        create_less_component,
+        create_jinjax_component,
+    )
+
+
