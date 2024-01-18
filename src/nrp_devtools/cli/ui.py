@@ -185,15 +185,17 @@ def create_less_component(config: OARepoConfig, component_type, component_name, 
 
         # create variable and override files
         component_variables_file.parent.mkdir(parents=True, exist_ok=True)
-        component_variables_file.write_text(f"""
+        if not component_variables_file.exists():
+            component_variables_file.write_text(f"""
 /* https://github.com/Semantic-Org/example-github/blob/master/semantic/src/themes/default/globals/site.variables */
 /* @{component_name}Background: @inputBackground; */
-        """)
+            """)
         click.secho(f"Place variables that parametrize the component inside {component_variables_file}",
                     fg="green")
 
         component_overrides_file.parent.mkdir(parents=True, exist_ok=True)
-        component_overrides_file.touch()
+        if not component_overrides_file.exists():
+            component_overrides_file.touch()
 
         # create the component
         less_data = (Path(__file__).parent.parent / "templates" / "component.less").read_text()
@@ -201,7 +203,8 @@ def create_less_component(config: OARepoConfig, component_type, component_name, 
         less_data = less_data.replace('{{component_name}}', component_name)
 
         component_file.parent.mkdir(parents=True, exist_ok=True)
-        component_file.write_text(less_data)
+        if not component_file.exists():
+            component_file.write_text(less_data)
         click.secho(f"Put the default css to {component_file}", fg="green")
 
         # add the component to the registration file
@@ -216,11 +219,12 @@ def create_less_component(config: OARepoConfig, component_type, component_name, 
         jinjax_component_file = ui_dir / "templates" / ui_name / f"{component_name_capitalized}.jinja"
 
         jinjax_component_file.parent.mkdir(parents=True, exist_ok=True)
-        jinjax_component_file.write_text(f"""{{# def #}}
-<div class="ui {component_name}">
-  Overwrite this file with your own jinja template.
-</div>
-        """)
+        if not jinjax_component_file.exists():
+            jinjax_component_file.write_text(f"""{{# def #}}
+    <div class="ui {component_name}">
+      Overwrite this file with your own jinja template.
+    </div>
+            """)
         click.secho(f"Place the HTML code of the component to {jinjax_component_file} "
                     f"and reference it from elsewhere as <components.{component_name_capitalized} /> or <{component_name_capitalized} />. "
                     f"Do not forget to put css classes 'ui {component_name}' to the root element of the template.",
