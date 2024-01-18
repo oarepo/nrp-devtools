@@ -22,6 +22,7 @@ def build_command(*, config: OARepoConfig, **kwargs):
     """Builds the repository"""
     return build_command_internal(config=config, **kwargs)
 
+
 def build_command_internal(*, config: OARepoConfig, **kwargs):
     return (
         no_args(

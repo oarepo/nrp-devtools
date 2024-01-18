@@ -3,7 +3,7 @@ from pathlib import Path
 import caseconverter
 
 from nrp_devtools.commands.pyproject import PyProject
-from nrp_devtools.commands.utils import run_cookiecutter, capitalize_name
+from nrp_devtools.commands.utils import capitalize_name, run_cookiecutter
 from nrp_devtools.config import OARepoConfig
 
 

@@ -9,11 +9,9 @@ theme = WebpackThemeBundle(
             "entry": {
                 "components": "./js/custom-components.js",
             },
-            "dependencies": {
-            },
+            "dependencies": {},
             "devDependencies": {},
-            "aliases": {
-            },
+            "aliases": {},
         }
     },
 )

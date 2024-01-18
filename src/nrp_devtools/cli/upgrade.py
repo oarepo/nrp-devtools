@@ -1,7 +1,7 @@
-from .build import build_command_internal
 from ..commands.pdm import build_requirements
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command
+from .build import build_command_internal
 
 
 @nrp_command.command(name="upgrade")
@@ -11,6 +11,4 @@ def upgrade_command(*, config: OARepoConfig, **kwargs):
 
     Resolves the newest applicable packages, downloads them and rebuilds the repository.
     """
-    return (
-        build_requirements,
-    ) + build_command_internal(config=config)
+    return (build_requirements,) + build_command_internal(config=config)

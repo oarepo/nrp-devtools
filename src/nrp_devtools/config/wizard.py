@@ -82,7 +82,7 @@ def prompt_set_choices(enum, prompt, default=None):
     """
     print(prompt)
 
-    choices = {chr(ord('A') + idx): e for idx, e in enumerate(enum)}
+    choices = {chr(ord("A") + idx): e for idx, e in enumerate(enum)}
 
     value = set(default or {})
 

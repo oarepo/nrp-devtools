@@ -32,3 +32,10 @@ def initialize_repository(config: OARepoConfig):
 
     # mark the nrp command executable
     (config.repository_dir / "nrp").chmod(0o755)
+
+    # set up the i18n
+    config.i18n.babel_source_paths = [
+        config.repository.shared_package,
+        config.repository.ui_package,
+    ]
+    config.i18n.i18next_source_paths = [config.repository.ui_package]

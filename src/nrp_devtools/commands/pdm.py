@@ -93,8 +93,16 @@ def install_python_repository(config, **kwargs):
     run_pdm(config, "install", "--dev", "--no-lock")
 
     # fixup for uritemplate / uritemplate.py
-    run_cmdline(config.venv_dir / "bin" / "pip", "install", "-U",
-                "--force-reinstall", "--upgrade-strategy", "eager", "uritemplate")
+    run_cmdline(
+        config.venv_dir / "bin" / "pip",
+        "install",
+        "-U",
+        "--force-reinstall",
+        "--upgrade-strategy",
+        "eager",
+        "uritemplate",
+    )
+
 
 def create_pdm_file(config: OARepoConfig, output_directory: str):
     original_pdm_file = tomli.loads(
@@ -104,7 +112,9 @@ def create_pdm_file(config: OARepoConfig, output_directory: str):
     oarepo_dependency = [
         x
         for x in dependencies
-        if re.match(r"^\s*oarepo\s*(\[[^\]]+\])?\s*==.*", x)  # take only oarepo package, discard others
+        if re.match(
+            r"^\s*oarepo\s*(\[[^\]]+\])?\s*==.*", x
+        )  # take only oarepo package, discard others
     ][0]
 
     original_pdm_file["project"]["dependencies"] = [oarepo_dependency]

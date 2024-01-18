@@ -1,8 +1,9 @@
 import click
 from pytimedinput import timedInput
 
-from .runner import Runner
 from nrp_devtools.config import OARepoConfig
+
+from .runner import Runner
 
 
 def show_menu(server: bool, ui: bool, development_mode: bool):

@@ -2,8 +2,8 @@ import json
 import shutil
 from pathlib import Path
 
-from .less import register_less_components
 from ..utils import run_cmdline
+from .less import register_less_components
 
 
 def load_watched_paths(paths_json, extra_paths):

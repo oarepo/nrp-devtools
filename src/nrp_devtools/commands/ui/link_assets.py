@@ -1,5 +1,4 @@
 import shutil
-import sys
 from pathlib import Path
 
 import click
@@ -46,7 +45,10 @@ def link_assets(config: OARepoConfig):
 
     for kind, existing_data in existing.items():
         if existing_data:
-            click.secho(f"Error: following {kind} are not linked, will remove those from .venv assets", fg="red")
+            click.secho(
+                f"Error: following {kind} are not linked, will remove those from .venv assets",
+                fg="red",
+            )
             for target in existing_data:
                 if target.exists():
                     click.secho(f"  {target}", fg="red")

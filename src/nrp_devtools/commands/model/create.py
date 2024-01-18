@@ -72,13 +72,13 @@ def create_model(config: OARepoConfig, *, model_name):
 
     if model.base_model == BaseModel.data:
         extend = {
-            "extend": '"nr-data#DataModel"',
+            "extend": "nr-data#DataModel",
         }
         plugins.add("oarepo-model-builder-nr")
         runtime_dependencies["nr-metadata"] = "2.0.0"
     elif model.base_model == BaseModel.documents:
         extend = {
-            "extend": '"nr-documents#DocumentModel"',
+            "extend": "nr-documents#DocumentModel",
         }
         plugins.add("oarepo-model-builder-nr")
         runtime_dependencies["nr-metadata"] = "2.0.0"

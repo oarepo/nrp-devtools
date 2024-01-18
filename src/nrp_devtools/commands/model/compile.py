@@ -389,3 +389,8 @@ def rewrite_revision_file(
     with open(target_file.replace(current_revision_id, new_id), "w") as f:
         f.write(file_text)
     os.remove(target_file)
+
+
+def add_model_to_i18n(config: OARepoConfig, *, model, **kwargs):
+    i18n_config = config.i18n
+    i18n_config.babel_source_paths.append(model.model_package)

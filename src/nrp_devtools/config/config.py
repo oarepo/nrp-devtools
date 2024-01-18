@@ -8,6 +8,7 @@ import dacite
 import yaml
 from yaml.representer import SafeRepresenter
 
+from .i18n_config import I18NConfig
 from .model_config import BaseModel, ModelConfig, ModelFeature
 from .repository_config import RepositoryConfig
 from .ui_config import UIConfig
@@ -45,6 +46,7 @@ class OARepoConfig:
     repository: Optional[RepositoryConfig] = None
     models: List[ModelConfig] = dataclasses.field(default_factory=list)
     uis: List[UIConfig] = dataclasses.field(default_factory=list)
+    i18n: I18NConfig = dataclasses.field(default_factory=I18NConfig)
 
     python = "python3"
     python_version = ">=3.9,<3.11"
@@ -131,6 +133,7 @@ class OARepoConfig:
         self.models = loaded.models
         self.uis = loaded.uis
         self.repository = loaded.repository
+        self.i18n = loaded.i18n
 
     def save(self):
         if self.config_file.exists():

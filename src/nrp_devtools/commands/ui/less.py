@@ -1,6 +1,5 @@
 import json
 import re
-from pathlib import Path
 
 from nrp_devtools.commands.utils import run_cmdline
 from nrp_devtools.config import OARepoConfig

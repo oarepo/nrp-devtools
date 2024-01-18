@@ -23,6 +23,7 @@ def check_docker_env(config: OARepoConfig, **kwargs):
             "Docker environment file is missing. Please run this command with --fix to fix the problem."
         )
 
+
 def fix_docker_env(config: OARepoConfig, **kwargs):
     (config.repository_dir / "docker" / ".env").symlink_to(
         config.repository_dir / "variables"

@@ -7,8 +7,7 @@ theme = WebpackThemeBundle(
     themes={
         "semantic-ui": {
             "entry": {},
-            "dependencies": {
-            },
+            "dependencies": {},
             "devDependencies": {},
             "aliases": {
                 "@translations/i18next": "translations/i18next.js",

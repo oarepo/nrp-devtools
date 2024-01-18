@@ -8,9 +8,11 @@ from ..commands.docker import (
     check_containers,
     check_docker_callable,
     check_docker_compose_version,
+    check_docker_env,
     check_node_version,
     check_npm_version,
-    fix_containers, fix_docker_env, check_docker_env,
+    fix_containers,
+    fix_docker_env,
 )
 from ..commands.invenio import check_invenio_cfg, install_invenio_cfg
 from ..commands.opensearch import check_search, fix_custom_fields, fix_search
@@ -30,7 +32,6 @@ from ..commands.s3 import (
     fix_s3_location_in_database,
 )
 from ..commands.ui import check_ui, fix_ui
-from ..commands.ui.assets import register_less_components
 from ..commands.utils import make_step, no_args, run_fixup
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command

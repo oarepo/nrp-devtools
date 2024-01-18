@@ -1,6 +1,6 @@
 [project]
 name = "nrp-devtools"
-version = "0.1.8"
+version = "0.1.9"
 description = "NRP repository development tools"
 readme = "README.md"
 authors = [
@@ -49,6 +49,9 @@ dependencies = [
 
   # testing
   "pytest",
+
+  # i18n
+  "oarepo-tools"
 ]
 
 [project.scripts]
