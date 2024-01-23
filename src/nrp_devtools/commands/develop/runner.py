@@ -248,6 +248,14 @@ class FileCopier:
 
         for path, kind in self.watched_paths.items():
             path = Path(path).resolve()
+            if not path.exists():
+                click.secho(f">>>> Watcher error:", fg="red")
+                click.secho(f">>>>", fg="red")
+                click.secho(f">>>> Path {path} does not exist, will not watch it!", fg="red")
+                click.secho(f">>>>", fg="red")
+                click.secho(f">>>>", fg="red")
+                continue
+
             if kind == "static":
                 self.watcher.schedule(
                     self.Handler(path, static_target_path, self.watcher),
