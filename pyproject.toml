@@ -1,6 +1,6 @@
 [project]
 name = "nrp-devtools"
-version = "0.1.10"
+version = "0.1.11"
 description = "NRP repository development tools"
 readme = "README.md"
 authors = [
@@ -34,7 +34,6 @@ dependencies = [
 
   # for develop (webpack)
   "watchdog",
-  "pytimedinput",
   "psutil",
 
   # nrp makemessages

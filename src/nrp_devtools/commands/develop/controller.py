@@ -1,5 +1,9 @@
+import os
+import select
+import sys
+import time
+
 import click
-from pytimedinput import timedInput
 
 from nrp_devtools.config import OARepoConfig
 
@@ -24,6 +28,44 @@ def show_menu(server: bool, ui: bool, development_mode: bool):
     click.secho("0 or stop       - stop the server (Ctrl-C also works)", fg="red")
     click.secho("")
     click.secho("")
+
+
+def timedInput(prompt, timeout):
+    try:
+        os.set_blocking(sys.stdin.fileno(), False)
+
+        start_time = time.time()
+        print(prompt, end="", flush=True)
+        choice = ""
+        while True:
+            remaining_time = timeout - (time.time() - start_time)
+            if remaining_time <= 0:
+                return (choice, True)
+
+            is_data = select.select([sys.stdin], [], [], remaining_time) == (
+                [sys.stdin],
+                [],
+                [],
+            )
+
+            while is_data:
+                for input_char in sys.stdin.read():
+                    if input_char in ("\n", "\r"):
+                        return (choice, False)
+                    else:
+                        choice += input_char
+
+                is_data = select.select([sys.stdin], [], [], 0.01) == (
+                    [sys.stdin],
+                    [],
+                    [],
+                )
+
+            time.sleep(
+                0.5
+            )  # sanity check, if the select returns immediately, sleep a bit
+    finally:
+        os.set_blocking(sys.stdin.fileno(), True)
 
 
 def run_develop_controller(
