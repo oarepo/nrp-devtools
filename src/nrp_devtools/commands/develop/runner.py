@@ -1,11 +1,9 @@
 import os
 import shutil
 import subprocess
-import threading
 import time
 import traceback
 from pathlib import Path
-from threading import RLock
 from typing import Optional
 
 import click
@@ -223,7 +221,7 @@ class FileCopier:
             )
 
         def copy_file(self, source_path, target_path):
-            if str(source_path).endswith('~'):
+            if str(source_path).endswith("~"):
                 return
             print(f"Copying {source_path} to {target_path}")
             target_path.parent.mkdir(parents=True, exist_ok=True)
@@ -266,8 +264,7 @@ class FileCopier:
 
     def join(self):
         try:
-            while self.watcher.isAlive():
-                self.watcher.join(1)
-        finally:
             self.watcher.stop()
-            self.watcher.join()
+            self.watcher.join(10)
+        except:
+            print("Could not stop watcher thread but continuing anyway")
