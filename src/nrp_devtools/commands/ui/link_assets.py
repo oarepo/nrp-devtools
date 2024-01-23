@@ -9,7 +9,7 @@ from nrp_devtools.config import OARepoConfig
 from .assets import load_watched_paths
 
 
-def link_assets(config: OARepoConfig):
+def copy_assets_to_webpack_build_dir(config: OARepoConfig):
     # assets = (config.site_dir / "assets").resolve()
     static = (config.ui_dir / "static").resolve()
 
@@ -31,7 +31,7 @@ def link_assets(config: OARepoConfig):
             continue
         existing[kind].add(target)
 
-    linked = {k: {} for k in kinds}
+    copied = {k: {} for k in kinds}
 
     for kind, source_path, source_file in tqdm(
         _list_source_files(watched_paths), desc="Checking paths"
@@ -39,17 +39,19 @@ def link_assets(config: OARepoConfig):
         target_file = (
             config.invenio_instance_path / kind / source_file.relative_to(source_path)
         )
-        linked[kind][source_file] = target_file
+        copied[kind][source_file] = target_file
         if target_file in existing[kind]:
             existing[kind].remove(target_file)
 
     for kind, existing_data in existing.items():
-        if existing_data:
+        to_remove = [target for target in existing_data if target.exists()]
+        if to_remove:
             click.secho(
-                f"Error: following {kind} are not linked, will remove those from .venv assets",
+                f"Error: following {kind} are not in the source directories, "
+                "will remove those from .venv assets",
                 fg="red",
             )
-            for target in existing_data:
+            for target in to_remove:
                 if target.exists():
                     click.secho(f"  {target}", fg="red")
                     if target.is_dir():
@@ -58,14 +60,15 @@ def link_assets(config: OARepoConfig):
                         target.unlink()
 
     for kind, source_file, target_file in tqdm(
-        _list_linked_files(linked), desc="Linking assets and statics"
+        _list_copied_files(copied), desc="Linking assets and statics"
     ):
         target_file.parent.mkdir(parents=True, exist_ok=True)
         try:
             target_file.unlink()
         except FileNotFoundError:
             pass
-        target_file.symlink_to(source_file)
+        # copy source file to target file
+        shutil.copy(source_file, target_file)
 
 
 def _list_files(kinds, base_path):
@@ -84,7 +87,7 @@ def _list_source_files(watched_paths):
             yield kind, source_path, source_file
 
 
-def _list_linked_files(linked):
+def _list_copied_files(linked):
     for kind, linked_data in linked.items():
         for source_file, target_file in linked_data.items():
             yield kind, source_file, target_file

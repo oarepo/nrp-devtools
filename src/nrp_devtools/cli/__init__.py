@@ -5,9 +5,9 @@ from .develop import develop_command
 from .initialize import initialize_command
 from .model import model_group
 from .run import run_command
+from .translations import translations_command
 from .ui import ui_group
 from .upgrade import upgrade_command
-from .translations import translations_command
 
 __all__ = [
     "nrp_command",
@@ -19,5 +19,5 @@ __all__ = [
     "build_command",
     "run_command",
     "model_group",
-    "translations_command"
+    "translations_command",
 ]

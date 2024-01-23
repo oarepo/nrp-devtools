@@ -4,11 +4,12 @@ from pathlib import Path
 import click
 
 from ..commands.model.compile import (
+    add_model_to_i18n,
     add_requirements_and_entrypoints,
     compile_model_to_tempdir,
     copy_compiled_model,
     generate_alembic,
-    install_model_compiler, add_model_to_i18n,
+    install_model_compiler,
 )
 from ..commands.model.create import create_model
 from ..commands.pdm import install_python_repository

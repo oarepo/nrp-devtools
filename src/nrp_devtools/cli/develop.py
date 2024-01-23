@@ -2,7 +2,7 @@ import click
 
 from ..commands.develop import Runner
 from ..commands.develop.controller import run_develop_controller
-from ..commands.ui.link_assets import link_assets
+from ..commands.ui.link_assets import copy_assets_to_webpack_build_dir
 from ..commands.utils import make_step
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command
@@ -31,7 +31,7 @@ def develop_command(
     context = {}
     return (
         *(check_commands(context, local_packages, fix=True) if checks else ()),
-        link_assets,
+        copy_assets_to_webpack_build_dir,
         make_step(
             lambda config=None, runner=None: runner.start_python_server(
                 development_mode=True

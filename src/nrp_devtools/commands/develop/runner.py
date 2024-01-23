@@ -1,23 +1,25 @@
 import os
+import shutil
 import subprocess
-import threading
 import time
 import traceback
-from threading import RLock
+from pathlib import Path
 from typing import Optional
 
 import click
 import psutil
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
-from nrp_devtools.commands.ui.link_assets import link_assets
+from nrp_devtools.commands.ui.assets import load_watched_paths
+from nrp_devtools.commands.ui.link_assets import copy_assets_to_webpack_build_dir
 from nrp_devtools.config import OARepoConfig
 
 
 class Runner:
     python_server_process: Optional[subprocess.Popen] = None
     webpack_server_process: Optional[subprocess.Popen] = None
-    file_watcher_thread: Optional[threading.Thread] = None
-    file_watcher_stopping = None
+    file_copier: Optional["FileCopier"] = None
 
     def __init__(self, config: OARepoConfig):
         self.config = config
@@ -90,17 +92,7 @@ class Runner:
 
     def start_file_watcher(self):
         click.secho("Starting file watcher", fg="yellow")
-
-        def watch_files():
-            while True:
-                if self.file_watcher_stopping.acquire(timeout=1):
-                    break
-
-        self.file_watcher_stopping = RLock()
-        self.file_watcher_stopping.acquire()
-
-        self.file_watcher_thread = threading.Thread(target=watch_files, daemon=True)
-        self.file_watcher_thread.start()
+        self.file_copier = FileCopier(self.config)
         click.secho("File watcher started", fg="green")
 
     def stop(self):
@@ -121,7 +113,7 @@ class Runner:
             self.stop_file_watcher()
             # just for being sure, link assets
             # (they might have changed and were not registered before)
-            link_assets(self.config)
+            copy_assets_to_webpack_build_dir(self.config)
             self.start_file_watcher()
             self.start_webpack_server()
         except:
@@ -155,11 +147,9 @@ class Runner:
 
     def stop_file_watcher(self):
         click.secho("Stopping file watcher", fg="yellow")
-        if self.file_watcher_thread:
-            self.file_watcher_stopping.release()
-            self.file_watcher_thread.join()
-            self.file_watcher_thread = None
-            self.file_watcher_stopping = None
+        if self.file_copier:
+            self.file_copier.join()
+            self.file_copier = None
 
     def _kill_process_tree(self, process_tree: subprocess.Popen):
         parent_pid = process_tree.pid
@@ -167,3 +157,114 @@ class Runner:
         for child in parent.children(recursive=True):
             child.kill()
         parent.kill()
+
+
+class FileCopier:
+    class Handler(FileSystemEventHandler):
+        def __init__(self, source_path: Path, target_path: Path, watcher):
+            self.source_root_path = source_path
+            self.target_root_path = target_path
+            self.watcher = watcher
+            print(f"Watching {source_path} -> {target_path}")
+
+        def on_closed(self, event):
+            if event.is_directory:
+                return
+
+            try:
+                time.sleep(0.01)
+                self.copy_file(event.src_path, self.make_target_path(event.src_path))
+            except:
+                traceback.print_exc()
+
+        def on_modified(self, event):
+            if event.is_directory:
+                return
+
+            try:
+                time.sleep(0.1)
+                self.copy_file(event.src_path, self.make_target_path(event.src_path))
+            except:
+                traceback.print_exc()
+
+        def on_moved(self, event):
+            try:
+                time.sleep(0.01)
+                self.remove_file(event.src_path, self.make_target_path(event.src_path))
+                self.copy_file(event.dest_path, self.make_target_path(event.dest_path))
+            except:
+                traceback.print_exc()
+
+        def on_created(self, event):
+            """When a new directory is created, add a watch for it"""
+            if event.is_directory:
+                self.watcher.schedule(
+                    type(self)(
+                        event.src_path,
+                        self.make_target_path(event.src_path),
+                        self.watcher,
+                    ),
+                    event.src_path,
+                    recursive=True,
+                )
+
+        def on_deleted(self, event):
+            try:
+                time.sleep(0.01)
+                self.remove_file(event.src_path, self.make_target_path(event.src_path))
+            except:
+                traceback.print_exc()
+
+        def make_target_path(self, source_path):
+            return self.target_root_path / Path(source_path).relative_to(
+                self.source_root_path
+            )
+
+        def copy_file(self, source_path, target_path):
+            if str(source_path).endswith("~"):
+                return
+            print(f"Copying {source_path} to {target_path}")
+            target_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(source_path, target_path)
+
+        def remove_file(self, source_path, target_path):
+            print(f"Removing {target_path}")
+            if target_path.exists():
+                target_path.unlink()
+
+    def __init__(self, config):
+        self.config = config
+        static = (config.ui_dir / "static").resolve()
+
+        self.watched_paths = load_watched_paths(
+            config.invenio_instance_path / "watch.list.json",
+            [f"{static}=static"],
+        )
+        print(self.watched_paths)
+
+        self.watcher = Observer()
+        static_target_path = self.config.invenio_instance_path / "static"
+        assets_target_path = self.config.invenio_instance_path / "assets"
+
+        for path, kind in self.watched_paths.items():
+            path = Path(path).resolve()
+            if kind == "static":
+                self.watcher.schedule(
+                    self.Handler(path, static_target_path, self.watcher),
+                    str(path),
+                    recursive=True,
+                )
+            elif kind == "assets":
+                self.watcher.schedule(
+                    self.Handler(path, assets_target_path, self.watcher),
+                    str(path),
+                    recursive=True,
+                )
+        self.watcher.start()
+
+    def join(self):
+        try:
+            self.watcher.stop()
+            self.watcher.join(10)
+        except:
+            print("Could not stop watcher thread but continuing anyway")
