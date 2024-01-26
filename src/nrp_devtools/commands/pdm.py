@@ -74,7 +74,7 @@ def lock_python_repository(config, subdir=None):
     run_pdm(config, "lock", subdir=subdir)
 
 
-def check_invenio_callable(config, **kwargs):
+def check_invenio_callable(config, will_fix=False, **kwargs):
     try:
         run_cmdline(
             config.venv_dir / "bin" / "invenio",
@@ -86,6 +86,7 @@ def check_invenio_callable(config, **kwargs):
     except:
         check_failed(
             f"Virtualenv directory {config.venv_dir} does not contain a callable invenio installation",
+            will_fix=will_fix,
         )
 
 
@@ -196,7 +197,7 @@ def install_local_packages(config, local_packages=None):
         )
 
 
-def check_virtualenv(config: OARepoConfig, **kwargs):
+def check_virtualenv(config: OARepoConfig, will_fix=False, **kwargs):
     if not config.venv_dir.exists():
         click.secho(
             f"Virtualenv directory {config.venv_dir} does not exist", fg="red", err=True
@@ -212,6 +213,7 @@ def check_virtualenv(config: OARepoConfig, **kwargs):
     except:  # noqa
         check_failed(
             f"Virtualenv directory {config.venv_dir} does not contain a python installation",
+            will_fix=will_fix,
         )
 
     try:
@@ -224,6 +226,7 @@ def check_virtualenv(config: OARepoConfig, **kwargs):
     except:  # noqa
         check_failed(
             f"Virtualenv directory {config.venv_dir} does not contain a pip installation",
+            will_fix=will_fix,
         )
 
 
@@ -232,7 +235,7 @@ def fix_virtualenv(config: OARepoConfig, **kwargs):
     create_empty_venv(config)
 
 
-def check_requirements(config: OARepoConfig, **kwargs):
+def check_requirements(config: OARepoConfig, will_fix=False, **kwargs):
     reqs_file = config.repository_dir / "requirements.txt"
     if not reqs_file.exists():
         check_failed(f"Requirements file {reqs_file} does not exist")
@@ -243,6 +246,7 @@ def check_requirements(config: OARepoConfig, **kwargs):
     if pyproject.exists() and pyproject.stat().st_mtime > reqs_file.stat().st_mtime:
         check_failed(
             f"Requirements file {reqs_file} is out of date, {pyproject} has been modified",
+            will_fix=will_fix,
         )
 
 

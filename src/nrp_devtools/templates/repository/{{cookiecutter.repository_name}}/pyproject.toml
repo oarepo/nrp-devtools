@@ -30,6 +30,8 @@ components = "{{cookiecutter.ui_package}}.components:create_blueprint"
 [project.entry-points."invenio_i18n.translations"]
 translations = "i18n"
 
+[project.entry-points."invenio_db.alembic"]
+repo = "{{cookiecutter.shared_package}}:alembic"
 
 [build-system]
 requires = [

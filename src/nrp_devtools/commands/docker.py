@@ -17,10 +17,11 @@ from .check import check_failed
 from .invenio import get_invenio_configuration, get_repository_info
 
 
-def check_docker_env(config: OARepoConfig, **kwargs):
+def check_docker_env(config: OARepoConfig, will_fix=False, **kwargs):
     if not (config.repository_dir / "docker" / ".env").exists():
         check_failed(
-            "Docker environment file is missing. Please run this command with --fix to fix the problem."
+            "Docker environment file is missing. Please run this command with --fix to fix the problem.",
+            will_fix=will_fix,
         )
 
 
@@ -30,12 +31,13 @@ def fix_docker_env(config: OARepoConfig, **kwargs):
     )
 
 
-def check_docker_callable(config: OARepoConfig):
+def check_docker_callable(config: OARepoConfig, will_fix=False, **kwargs):
     try:
         run_cmdline("docker", "ps", grab_stdout=True, raise_exception=True)
     except:  # noqa
         check_failed(
-            "Docker is not callable. Please install docker and make sure it is running."
+            "Docker is not callable. Please install docker and make sure it is running.",
+            will_fix=will_fix,
         )
 
 
@@ -111,31 +113,50 @@ def retry(fn, config, context, tries=10, timeout=1, verbose=False):
 
 
 def check_containers(
-    config: OARepoConfig, *, context, fast_fail=False, verbose=False, **kwargs
+    config: OARepoConfig,
+    *,
+    context,
+    fast_fail=False,
+    verbose=False,
+    will_fix=False,
+    **kwargs,
 ):
     def test_docker_containers_accessible(*_, **__):
         # pass empty context to prevent caching of the repository info
         repository_info = get_repository_info(config, context={})
         if repository_info["db"] == "connection_error":
-            check_failed("Database container is not running or is not accessible.")
+            check_failed(
+                "Database container is not running or is not accessible.",
+                will_fix=will_fix,
+            )
         else:
             click.secho("    Database is alive", fg="green")
         if repository_info["opensearch"] == "connection_error":
-            check_failed("OpenSearch container is not running or is not accessible.")
+            check_failed(
+                "OpenSearch container is not running or is not accessible.",
+                will_fix=will_fix,
+            )
         else:
             click.secho("    OpenSearch is alive", fg="green")
         if repository_info["files"] == "connection_error":
-            check_failed("S3 container (minio) is not running or is not accessible.")
+            check_failed(
+                "S3 container (minio) is not running or is not accessible.",
+                will_fix=will_fix,
+            )
         else:
             click.secho("    S3 is alive", fg="green")
         if repository_info["mq"] == "connection_error":
             check_failed(
-                "Message queue container (rabbitmq) is not running or is not accessible."
+                "Message queue container (rabbitmq) is not running or is not accessible.",
+                will_fix=will_fix,
             )
         else:
             click.secho("    Message queue is alive", fg="green")
         if repository_info["cache"] == "connection_error":
-            check_failed("Cache container (redis) is not running or is not accessible.")
+            check_failed(
+                "Cache container (redis) is not running or is not accessible.",
+                will_fix=will_fix,
+            )
         else:
             click.secho("    Cache is alive", fg="green")
 

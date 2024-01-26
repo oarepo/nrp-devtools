@@ -100,7 +100,12 @@ def create_model(config: OARepoConfig, *, model_name):
             "use": ["invenio", *extra_includes],
         },
         "plugins": {
-            "builder": {"disable": ["script_sample_data"]},
+            "builder": {
+                "disable": [
+                    "script_sample_data",
+                    "invenio_record_metadata_alembic_setup_cfg",
+                ]
+            },
             "packages": list(plugins),
         },
         "runtime-dependencies": runtime_dependencies,

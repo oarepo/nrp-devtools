@@ -4,13 +4,14 @@ from nrp_devtools.commands.utils import run_cmdline
 from nrp_devtools.config import OARepoConfig
 
 
-def check_db(config: OARepoConfig, context=None, **kwargs):
+def check_db(config: OARepoConfig, context=None, will_fix=False, **kwargs):
     repository_info = get_repository_info(config, context)
     db_status = repository_info["db"]
 
     if db_status != "ok":
         check_failed(
             f"Database is not ready, it reports status {db_status}.",
+            will_fix=will_fix,
         )
 
 

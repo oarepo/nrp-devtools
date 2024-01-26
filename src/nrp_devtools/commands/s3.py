@@ -8,11 +8,14 @@ from nrp_devtools.commands.utils import run_cmdline
 from nrp_devtools.config import OARepoConfig
 
 
-def check_s3_location_in_database(config: OARepoConfig, context=None, **kwargs):
+def check_s3_location_in_database(
+    config: OARepoConfig, context=None, will_fix=False, **kwargs
+):
     s3_location_status = get_repository_info(config, context)["files"]
     if s3_location_status == "default_location_missing":
         check_failed(
             f"S3 location is missing from the database.",
+            will_fix=will_fix,
         )
 
 
@@ -35,11 +38,14 @@ def fix_s3_location_in_database(config: OARepoConfig, context=None, **kwargs):
     context.pop("repository_info")
 
 
-def check_s3_bucket_exists(config: OARepoConfig, context=None, **kwargs):
+def check_s3_bucket_exists(
+    config: OARepoConfig, context=None, will_fix=False, **kwargs
+):
     s3_location_status = get_repository_info(config, context)["files"]
     if s3_location_status.startswith("bucket_does_not_exist:"):
         check_failed(
             f"S3 bucket {s3_location_status.split(':')[1]} does not exist.",
+            will_fix=will_fix,
         )
 
 

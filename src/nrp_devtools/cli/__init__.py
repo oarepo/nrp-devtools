@@ -1,3 +1,4 @@
+from .alembic import alembic_command
 from .base import nrp_command
 from .build import build_command
 from .check import check_command
@@ -20,4 +21,5 @@ __all__ = [
     "run_command",
     "model_group",
     "translations_command",
+    "alembic_command",
 ]

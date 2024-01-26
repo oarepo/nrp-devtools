@@ -187,14 +187,18 @@ def run_fixup(check_function, fix_function, fix=True, **global_kwargs):
     @wraps(check_function)
     def _run_fixup(config, **kwargs):
         try:
-            check_function(config, fast_fail=True, **kwargs, **global_kwargs)
+            check_function(
+                config, fast_fail=True, will_fix=fix, **kwargs, **global_kwargs
+            )
         except:
             if global_kwargs.get("verbose"):
                 traceback.print_exc()
             if not fix:
                 raise
             fix_function(config, **kwargs, **global_kwargs)
-            check_function(config, fast_fail=False, **kwargs, **global_kwargs)
+            check_function(
+                config, fast_fail=False, will_fix=False, **kwargs, **global_kwargs
+            )
 
     return _run_fixup
 

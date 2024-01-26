@@ -51,17 +51,19 @@ def get_invenio_configuration(config, context, *args):
     return [configuration[x] for x in args]
 
 
-def check_invenio_cfg(config: OARepoConfig, **kwargs):
+def check_invenio_cfg(config: OARepoConfig, will_fix=False, **kwargs):
     instance_dir = config.invenio_instance_path
     target_invenio_cfg = instance_dir / "invenio.cfg"
     target_variables = instance_dir / "variables"
     if not target_invenio_cfg.exists():
         check_failed(
             f"Site directory {instance_dir} does not contain invenio.cfg",
+            will_fix=will_fix,
         )
     if not target_variables.exists():
         check_failed(
             f"Site directory {instance_dir} does not contain variables file",
+            will_fix=will_fix,
         )
 
 

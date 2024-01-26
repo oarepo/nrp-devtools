@@ -33,7 +33,6 @@ def kill_process_tree(process, except_process):
 
 
 def exit_handler(*args, **kwargs):
-    print("Exit handler called, removing subprocesses ...")
     this_process = psutil.Process(os.getpid())
     kill_process_tree(this_process, except_process=this_process)
 

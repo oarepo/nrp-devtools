@@ -7,12 +7,13 @@ from .build import build_production_ui
 from .less import register_less_components
 
 
-def check_ui(config: OARepoConfig, **kwargs):
+def check_ui(config: OARepoConfig, will_fix=False, **kwargs):
     # check that there is a manifest.json there
     manifest = config.invenio_instance_path / "static" / "dist" / "manifest.json"
     if not manifest.exists():
         check_failed(
             f"manifest.json file is missing.",
+            will_fix=will_fix,
         )
 
     try:
@@ -21,10 +22,12 @@ def check_ui(config: OARepoConfig, **kwargs):
             check_failed(
                 f"manifest.json file is not ready. "
                 f"Either a build is in progress or it failed.",
+                will_fix=will_fix,
             )
     except:  # noqa
         check_failed(
             f"manifest.json file is not valid json file.",
+            will_fix=will_fix,
         )
 
 

@@ -8,7 +8,6 @@ from ..commands.model.compile import (
     add_requirements_and_entrypoints,
     compile_model_to_tempdir,
     copy_compiled_model,
-    generate_alembic,
     install_model_compiler,
 )
 from ..commands.model.create import create_model
@@ -62,6 +61,5 @@ def compile_model_command(*, config: OARepoConfig, model_name, **kwargs):
         make_step(copy_compiled_model, model=model, tempdir=tempdir),
         make_step(add_requirements_and_entrypoints, model=model, tempdir=tempdir),
         make_step(install_python_repository),
-        make_step(generate_alembic, model=model),
         make_step(add_model_to_i18n, model=model),
     )

@@ -251,7 +251,9 @@ class FileCopier:
             if not path.exists():
                 click.secho(f">>>> Watcher error:", fg="red")
                 click.secho(f">>>>", fg="red")
-                click.secho(f">>>> Path {path} does not exist, will not watch it!", fg="red")
+                click.secho(
+                    f">>>> Path {path} does not exist, will not watch it!", fg="red"
+                )
                 click.secho(f">>>>", fg="red")
                 click.secho(f">>>>", fg="red")
                 continue

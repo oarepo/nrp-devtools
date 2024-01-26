@@ -4,11 +4,12 @@ from nrp_devtools.commands.utils import run_cmdline
 from nrp_devtools.config import OARepoConfig
 
 
-def check_search(config: OARepoConfig, context=None, **kwargs):
+def check_search(config: OARepoConfig, context=None, will_fix=False, **kwargs):
     opensearch_status = get_repository_info(config, context)["opensearch"]
     if opensearch_status != "ok":
         check_failed(
             f"Search is not ready, it reports status {opensearch_status}.",
+            will_fix=will_fix,
         )
 
 
