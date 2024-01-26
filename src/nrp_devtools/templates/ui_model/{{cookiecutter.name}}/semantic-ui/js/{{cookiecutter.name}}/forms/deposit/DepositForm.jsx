@@ -61,7 +61,7 @@ export const DepositForm = () => {
                 fluid
               />
               <pre>Add more of your deposit form fields here 👇</pre>
-              <FormikStateLogger target="dom" />
+              <FormikStateLogger render={true} />
             </Grid.Column>
           </Ref>
           <Ref innerRef={sidebarRef}>
