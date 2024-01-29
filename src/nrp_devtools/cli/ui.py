@@ -55,7 +55,7 @@ def pages_group():
     "ui-endpoint",
     required=False,
 )
-@command_sequence()
+@command_sequence(save=True)
 def create_pages(config: OARepoConfig, ui_name, ui_endpoint, **kwargs):
     """
     Create a new UI pages collection.
@@ -101,7 +101,7 @@ def model_group():
     "ui-endpoint",
     required=False,
 )
-@command_sequence()
+@command_sequence(save=True)
 def create_model(config: OARepoConfig, model_name, ui_name, ui_endpoint, **kwargs):
     """
     Create a new UI model.
