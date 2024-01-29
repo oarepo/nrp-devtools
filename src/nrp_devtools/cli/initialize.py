@@ -23,7 +23,7 @@ from .base import command_sequence, nrp_command
     help="Do not ask for input, use the initial config only",
     is_flag=True,
 )
-@command_sequence(repository_dir_as_argument=True, repository_dir_must_exist=False)
+@command_sequence(repository_dir_as_argument=True, repository_dir_must_exist=False, save=True)
 def initialize_command(
     *, repository_dir, config: OARepoConfig, verbose, initial_config, no_input
 ):

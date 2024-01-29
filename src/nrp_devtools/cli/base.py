@@ -23,6 +23,7 @@ def command_sequence(
     continue_on_errors: Union[
         bool, Callable[[OARepoConfig, Dict[str, Any]], bool]
     ] = False,
+    save: bool = False
 ):
     def wrapper(command):
         command = click.option(
@@ -90,7 +91,8 @@ def command_sequence(
                 run_steps(
                     config, steps, step_commands, continue_on_errors=_continue_on_errors
                 )
-            config.save()
+            if save:
+                config.save()
 
         return proxied
 
