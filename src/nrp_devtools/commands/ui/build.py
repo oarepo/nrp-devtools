@@ -3,7 +3,8 @@ from nrp_devtools.config import OARepoConfig
 
 
 def build_production_ui(config: OARepoConfig):
-    run_cmdline(config.invenio_command, "webpack", "build", "--production")
+    run_cmdline(config.invenio_command, "webpack", "build", "--production",
+                environ={"INVENIO_INSTANCE_PATH": str(config.invenio_instance_path)})
 
     # do not allow Clean plugin to remove files
     webpack_config = (
