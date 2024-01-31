@@ -1,7 +1,5 @@
 import click
 
-from ..commands.develop import Runner
-from ..commands.develop.controller import run_develop_controller
 from ..commands.utils import make_step, run_cmdline
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command
@@ -14,12 +12,14 @@ def image_command(*, config: OARepoConfig, local_packages=None, checks=True, **k
 
     def build_image(*args, **kwargs):
         info_string = run_cmdline("docker", "info", grab_stdout=True)
-        architecture_line = [x for x in info_string.split('\n') if 'Architecture:' in x][0]
-        architecture = architecture_line.split(':')[1].strip()
-        if architecture == 'aarch64':
-            build_platform = 'linux/arm64/v8'
+        architecture_line = [
+            x for x in info_string.split("\n") if "Architecture:" in x
+        ][0]
+        architecture = architecture_line.split(":")[1].strip()
+        if architecture == "aarch64":
+            build_platform = "linux/arm64/v8"
         else:
-            build_platform = 'linux/amd64'
+            build_platform = "linux/amd64"
         click.secho(f"Building image for {build_platform}")
 
         run_cmdline(
@@ -39,6 +39,4 @@ def image_command(*, config: OARepoConfig, local_packages=None, checks=True, **k
             },
         )
 
-    return (
-        make_step(build_image),
-    )
+    return (make_step(build_image),)

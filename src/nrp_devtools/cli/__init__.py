@@ -3,13 +3,13 @@ from .base import nrp_command
 from .build import build_command
 from .check import check_command
 from .develop import develop_command
+from .image import image_command
 from .initialize import initialize_command
 from .model import model_group
 from .run import run_command
 from .translations import translations_command
 from .ui import ui_group
 from .upgrade import upgrade_command
-from .image import image_command
 
 __all__ = [
     "nrp_command",
@@ -23,5 +23,5 @@ __all__ = [
     "model_group",
     "translations_command",
     "alembic_command",
-    "image_command"
+    "image_command",
 ]
