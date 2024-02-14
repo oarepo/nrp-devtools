@@ -4,7 +4,7 @@ import Overridable from "react-overridable";
 
 import _get from "lodash/get";
 
-import { Grid, Item, Label, List, Icon } from "semantic-ui-react";
+import { Grid, Item } from "semantic-ui-react";
 import { withState, buildUID } from "react-searchkit";
 import { SearchConfigurationContext } from "@js/invenio_search_ui/components";
 
@@ -22,16 +22,14 @@ const ItemHeader = ({ title, searchUrl, selfLink }) => {
   );
 };
 
-const ItemSubheader = ({
-}) => {
+const ItemSubheader = ({}) => {
   // just an example
   return (
     <>
       <Item.Meta>
         <Grid columns={1}>
           <Grid.Column>
-            <Grid.Row className="ui double separated creatibutors">
-            </Grid.Row>
+            <Grid.Row className="ui double separated creatibutors"></Grid.Row>
           </Grid.Column>
         </Grid>
       </Item.Meta>
@@ -47,13 +45,14 @@ export const ResultsListItemComponent = ({
 }) => {
   const searchAppConfig = useContext(SearchConfigurationContext);
 
-  const title = _get(result, "metadata.title", '<no title>')
+  const title = _get(result, "metadata.title", "<no title>");
 
   return (
     <Overridable
       id={buildUID("RecordsResultsListItem.layout", "", appName)}
       result={result}
       title={title}
+      {...rest}
     >
       <Item key={result.id}>
         <Item.Content>
@@ -65,8 +64,8 @@ export const ResultsListItemComponent = ({
                   searchUrl={searchAppConfig.ui_endpoint}
                   selfLink={result.links.self}
                 />
-                <ItemSubheader/>
-                <Item.Description/>
+                <ItemSubheader />
+                <Item.Description />
               </Grid.Column>
             </Grid.Row>
           </Grid>
