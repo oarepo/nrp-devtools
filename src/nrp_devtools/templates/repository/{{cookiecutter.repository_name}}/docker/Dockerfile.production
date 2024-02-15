@@ -20,7 +20,7 @@ FROM --platform=$BUILDPLATFORM ${OAREPO_PRODUCTION_IMAGE} as production
 
 LABEL maintainer="" \
     org.opencontainers.image.authors="" \
-    org.opencontainers.image.title="{{ repository_name }}" \
+    org.opencontainers.image.title="{{ cookiecutter.repository_name }}" \
     org.opencontainers.image.url="" \
     org.opencontainers.image.source="" \
     org.opencontainers.image.documentation=""
