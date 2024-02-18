@@ -1,11 +1,9 @@
 [project]
 name = "nrp-devtools"
-version = "0.1.17"
+version = "0.1.18"
 description = "NRP repository development tools"
 readme = "README.md"
-authors = [
-  {name = "Miroslav Simek", email = "miroslav.simek@cesnet.cz" }
-]
+authors = [{ name = "Miroslav Simek", email = "miroslav.simek@cesnet.cz" }]
 dependencies = [
   "setuptools",
   "pip",
@@ -50,7 +48,7 @@ dependencies = [
   "pytest",
 
   # i18n
-  "oarepo-tools"
+  "oarepo-tools",
 ]
 
 [project.scripts]
