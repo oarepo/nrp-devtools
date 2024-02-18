@@ -27,7 +27,7 @@ def model_group():
 
 @model_group.command(name="create", help="Create a new model")
 @click.argument("model_name")
-@command_sequence()
+@command_sequence(save=True)
 def create_model_command(*, config: OARepoConfig, model_name, **kwargs):
     for model in config.models:
         if model.model_name == model_name:

@@ -1,6 +1,7 @@
 """
 This is the main entry point for the nrp devtools command line interface.
 """
+
 import functools
 import sys
 from pathlib import Path
@@ -23,8 +24,17 @@ def command_sequence(
     continue_on_errors: Union[
         bool, Callable[[OARepoConfig, Dict[str, Any]], bool]
     ] = False,
+    save: bool = False,
 ):
     def wrapper(command):
+        command = click.option(
+            "--override-config",
+            multiple=True,
+            help="Override configuration values. "
+            "This parameter might be repeated, "
+            "and the TEXT is <config-key>=<config-value>. "
+            "Only venv_dir and invenio_instance_path are supported.",
+        )(command)
         command = click.option(
             "--verbose", "-v", is_flag=True, help="Enables verbose mode."
         )(command)
@@ -73,6 +83,11 @@ def command_sequence(
             config = OARepoConfig(repository_dir)
             config.load()
 
+            override_config = kwargs.pop("override_config", [])
+            for override in override_config:
+                _k, _v = [x.strip() for x in override.split("=", maxsplit=1)]
+                config.overrides[_k] = _v
+
             # run the command
             step_commands = command(*args, config=config, **kwargs)
             if dry_run:
@@ -90,7 +105,8 @@ def command_sequence(
                 run_steps(
                     config, steps, step_commands, continue_on_errors=_continue_on_errors
                 )
-            config.save()
+            if save:
+                config.save()
 
         return proxied
 

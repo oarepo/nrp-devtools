@@ -71,6 +71,7 @@ def build_requirements(config, **kwargs):
 
 
 def lock_python_repository(config, subdir=None):
+    write_pdm_python(config)
     run_pdm(config, "lock", subdir=subdir)
 
 
@@ -91,6 +92,7 @@ def check_invenio_callable(config, will_fix=False, **kwargs):
 
 
 def install_python_repository(config, **kwargs):
+    write_pdm_python(config)
     run_pdm(config, "install", "--dev", "--no-lock")
 
     # fixup for uritemplate / uritemplate.py
@@ -141,6 +143,8 @@ def remove_virtualenv_from_env():
 
 
 def run_pdm(config, *args, subdir=None, **kwargs):
+    write_pdm_python(config)
+
     cwd = config.repository_dir
     if subdir:
         cwd = cwd / subdir
@@ -153,10 +157,10 @@ def run_pdm(config, *args, subdir=None, **kwargs):
         "PDM_IGNORE_SAVED_PYTHON": "1",
         **remove_virtualenv_from_env(),
     }
-
-    if (cwd / ".venv").exists():
+    venv_path = config.venv_dir
+    if venv_path.exists():
         environ.pop("PDM_IGNORE_ACTIVE_VENV", None)
-        environ["VIRTUAL_ENV"] = str(cwd / ".venv")
+        environ["VIRTUAL_ENV"] = str(venv_path)
         print(f"Using venv for pdm: {environ['VIRTUAL_ENV']}")
 
     return run_cmdline(
@@ -250,4 +254,12 @@ def check_requirements(config: OARepoConfig, will_fix=False, **kwargs):
         )
 
 
-# aa
+def write_pdm_python(config: OARepoConfig):
+    pdm_python_file = config.repository_dir / ".pdm-python"
+    if pdm_python_file.exists():
+        previous_content = pdm_python_file.read_text().strip()
+    else:
+        previous_content = None
+    new_content = str(config.venv_dir / "bin" / "python")
+    if new_content != previous_content:
+        pdm_python_file.write_text(new_content)

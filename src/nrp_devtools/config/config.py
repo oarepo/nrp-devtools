@@ -51,8 +51,12 @@ class OARepoConfig:
     python = "python3"
     python_version = ">=3.9,<3.11"
 
+    overrides = {}
+
     @property
     def venv_dir(self):
+        if "venv_dir" in self.overrides:
+            return Path(self.overrides["venv_dir"])
         return self.repository_dir / ".venv"
 
     @property
@@ -73,6 +77,8 @@ class OARepoConfig:
 
     @property
     def invenio_instance_path(self):
+        if "invenio_instance_path" in self.overrides:
+            return Path(self.overrides["invenio_instance_path"])
         return self.venv_dir / "var" / "instance"
 
     @property
