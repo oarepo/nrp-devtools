@@ -20,6 +20,7 @@ class {{cookiecutter.resource_config}}(RecordsUIResourceConfig):
         pass
 
     search_app_id="{{cookiecutter.name}}"
+    search_app_result_item="{{cookiecutter.name}}/search/ResultListItem"
 
     templates = {
         "detail": "{{cookiecutter.name}}.Detail",
