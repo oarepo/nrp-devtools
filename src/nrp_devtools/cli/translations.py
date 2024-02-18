@@ -18,4 +18,4 @@ def translations_command(
 
     To change the translated languages, edit the oarepo.yaml file.
     """
-    ctx.invoke(main, setup_cfg=config.config_file)
+    ctx.invoke(main, config_path=config.config_file)
