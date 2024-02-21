@@ -1,3 +1,4 @@
+{% raw -%}
 import React from "react";
 import _isEmpty from "lodash/isEmpty";
 import { BaseForm, TextField, FieldLabel } from "react-invenio-forms";
@@ -41,7 +42,7 @@ export const DepositForm = () => {
               computer={11}
             >
               <Sticky context={formFeedbackRef} offset={20}>
-                <Overridable id="{{cookiecutter.name}}.Deposit.FormFeedback.container">
+                <Overridable id="{%- endraw -%}{{cookiecutter.name}}{%- raw -%}.Deposit.FormFeedback.container">
                   <FormFeedback />
                 </Overridable>
               </Sticky>
@@ -72,7 +73,7 @@ export const DepositForm = () => {
               computer={5}
             >
               <Sticky context={sidebarRef} offset={20}>
-                <Overridable id="{{cookiecutter.name}}.Deposit.ControlPanel.container">
+                <Overridable id="{%- endraw -%}{{cookiecutter.name}}{%- raw -%}.Deposit.ControlPanel.container">
                   <Card fluid>
                     {/* <Card.Content>
                       <DepositStatusBox />
@@ -103,7 +104,7 @@ export const DepositForm = () => {
                         </Grid.Column>
                         {/* TODO:see if there is a better way to provide URL here, seems that UI links are empty in the form */}
                         <Grid.Column width={16} className="pt-10">
-                          <DeleteButton redirectUrl="{{cookiecutter.endpoint}}" />
+                          <DeleteButton redirectUrl="{%- endraw -%}{{cookiecutter.endpoint}}{%- raw -%}" />
                         </Grid.Column>
                       </Grid>
                     </Card.Content>
@@ -117,3 +118,4 @@ export const DepositForm = () => {
     </Container>
   );
 };
+{% endraw %}
