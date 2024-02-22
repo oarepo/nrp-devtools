@@ -1,3 +1,4 @@
+{% raw -%}
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
 import Overridable from "react-overridable";
@@ -124,3 +125,4 @@ ResultsListItemWithState.propTypes = {
 ResultsListItemWithState.defaultProps = {
   currentQueryState: null,
 };
+{% endraw %}

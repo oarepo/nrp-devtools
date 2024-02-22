@@ -6,7 +6,9 @@ theme = WebpackThemeBundle(
     default="semantic-ui",
     themes={
         "semantic-ui": {
-            "entry": {},
+            "entry": {
+                "branding": "./js/branding.js",
+            },
             "dependencies": {
                 "react-searchkit": "^2.0.0",
             },
