@@ -35,11 +35,7 @@ def collect_assets(config):
         f"{invenio_instance_path}/watch.list.json",
         environ={"INVENIO_INSTANCE_PATH": str(config.invenio_instance_path)},
     )
-    run_cmdline(
-        config.invenio_command,
-        "collect",
-        environ={"INVENIO_INSTANCE_PATH": str(config.invenio_instance_path)},
-    )
+
     run_cmdline(
         config.invenio_command,
         "webpack",
@@ -48,6 +44,11 @@ def collect_assets(config):
         environ={"INVENIO_INSTANCE_PATH": str(config.invenio_instance_path)},
     )
 
+    # "invenio collect" does collect assets, but links them instead of copying,
+    # so it can not be used here. So instead we use our own copying mechanism,
+    # the same that is used in nrp develop.
+    from .link_assets import copy_assets_to_webpack_build_dir
+    copy_assets_to_webpack_build_dir(config)
 
 
 def install_npm_packages(config):
