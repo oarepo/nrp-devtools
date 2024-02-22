@@ -37,11 +37,17 @@ def collect_assets(config):
     )
     run_cmdline(
         config.invenio_command,
+        "collect",
+        environ={"INVENIO_INSTANCE_PATH": str(config.invenio_instance_path)},
+    )
+    run_cmdline(
+        config.invenio_command,
         "webpack",
         "clean",
         "create",
         environ={"INVENIO_INSTANCE_PATH": str(config.invenio_instance_path)},
     )
+
 
 
 def install_npm_packages(config):

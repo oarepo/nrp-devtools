@@ -1,6 +1,6 @@
 [project]
 name = "nrp-devtools"
-version = "0.1.19"
+version = "0.1.20"
 description = "NRP repository development tools"
 readme = "README.md"
 authors = [{ name = "Miroslav Simek", email = "miroslav.simek@cesnet.cz" }]
