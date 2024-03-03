@@ -19,8 +19,7 @@ class {{cookiecutter.resource_config}}(RecordsUIResourceConfig):
     except ImportError:
         pass
 
-    search_app_id="{{cookiecutter.name}}"
-    search_app_result_item="{{cookiecutter.name}}/search/ResultListItem"
+    application_id="{{cookiecutter.name}}"
 
     templates = {
         "detail": "{{cookiecutter.name}}.Detail",
