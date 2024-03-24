@@ -11,11 +11,7 @@ import { SearchConfigurationContext } from "@js/invenio_search_ui/components";
 
 import { i18next } from "@translations/i18next";
 
-const ItemHeader = ({ title, searchUrl, selfLink }) => {
-  const viewLink = new URL(
-    selfLink,
-    new URL(searchUrl, window.location.origin)
-  );
+const ItemHeader = ({ title, viewLink }) => {
   return (
     <Item.Header as="h2">
       <a href={viewLink}>{title}</a>
@@ -62,8 +58,7 @@ export const ResultsListItemComponent = ({
               <Grid.Column className="results-list item-main">
                 <ItemHeader
                   title={title}
-                  searchUrl={searchAppConfig.ui_endpoint}
-                  selfLink={result.links.self}
+                  viewLink={result.links.self_html}
                 />
                 <ItemSubheader />
                 <Item.Description />
