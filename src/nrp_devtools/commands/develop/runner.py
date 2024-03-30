@@ -169,9 +169,21 @@ class Runner:
     def _read_python_output(self):
         while True:
             try:
-                line = self.python_server_process.stdout.readline()
+                if not self.python_server_process or not self.python_server_process.stdout:
+                    break
+                line: bytes = self.python_server_process.stdout.readline()
                 if line:
-                    print(line.decode("utf-8"), end="")
+                    for r in range(5):
+                        try:
+                            sys.stdout.buffer.write(line)
+                        except:
+                            time.sleep(0.1)
+                            continue
+                        try:
+                            sys.stdout.buffer.flush()
+                            break
+                        except:
+                            time.sleep(0.1)
             except:
                 break
 
