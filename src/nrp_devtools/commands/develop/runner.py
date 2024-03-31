@@ -1,6 +1,8 @@
 import os
 import shutil
 import subprocess
+import sys
+import threading
 import time
 import traceback
 from pathlib import Path
@@ -39,8 +41,13 @@ class Runner:
                 "--key",
                 self.config.repository_dir / "docker" / "development.key",
             ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             env={**os.environ, **environment},
+            pipesize=100000,
         )
+        self.python_reader_thread = threading.Thread(target=self._read_python_output, daemon=True)
+        self.python_reader_thread.start()
         for i in range(5):
             time.sleep(2)
             if self.python_server_process.poll() is not None:
@@ -69,6 +76,7 @@ class Runner:
                 "start",
             ],
             cwd=self.config.invenio_instance_path / "assets",
+            pass_fds=(sys.stdin.fileno(), sys.stdout.fileno(), sys.stderr.fileno()),
         )
         # wait at most a minute for webpack to start
         for i in range(60):
@@ -158,6 +166,26 @@ class Runner:
             child.kill()
         parent.kill()
 
+    def _read_python_output(self):
+        while True:
+            try:
+                if not self.python_server_process or not self.python_server_process.stdout:
+                    break
+                line: bytes = self.python_server_process.stdout.readline()
+                if line:
+                    for r in range(5):
+                        try:
+                            sys.stdout.buffer.write(line)
+                        except:
+                            time.sleep(0.1)
+                            continue
+                        try:
+                            sys.stdout.buffer.flush()
+                            break
+                        except:
+                            time.sleep(0.1)
+            except:
+                break
 
 class FileCopier:
     class Handler(FileSystemEventHandler):
