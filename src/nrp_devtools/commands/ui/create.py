@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import caseconverter
@@ -5,6 +6,9 @@ import caseconverter
 from nrp_devtools.commands.pyproject import PyProject
 from nrp_devtools.commands.utils import capitalize_name, run_cookiecutter
 from nrp_devtools.config import OARepoConfig
+
+from .create_detail import create_detail_page
+from nrp_devtools.config.model_config import ModelConfig
 
 
 def create_page_ui(config: OARepoConfig, *, ui_name: str):
@@ -50,6 +54,9 @@ def create_model_ui(config: OARepoConfig, *, ui_name: str):
     capitalized_name = caseconverter.camelcase(ui_config.name)
     capitalized_name = capitalized_name[0].upper() + capitalized_name[1:]
 
+    model_name = ui_config.model
+    prefix = model_name.capitalize()
+
     run_cookiecutter(
         config.ui_dir,
         template=Path(__file__).parent.parent.parent / "templates" / "ui_model",
@@ -61,8 +68,16 @@ def create_model_ui(config: OARepoConfig, *, ui_name: str):
             "resource_config": capitalized_name + "ResourceConfig",
             "ui_serializer_class": ui_config.ui_serializer_class,
             "api_service": ui_config.api_service,
+            "root_component": prefix + "DetailRoot",
         },
     )
+
+    model_config: ModelConfig = config.get_model(model_name)
+
+    ui_file = config.repository_dir / model_config.model_package / 'models' / 'ui.json'
+    ui_components_dir = config.ui_dir / ui_config.name / 'templates' / 'semantic-ui' / 'components'
+    ui_components_dir.mkdir(parents=True, exist_ok=True)
+    create_detail_page(ui_file, ui_components_dir, prefix)
 
 
 def register_model_ui(config: OARepoConfig, *, ui_name: str):
