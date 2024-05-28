@@ -124,43 +124,37 @@ def create_model(config: OARepoConfig, *, model_name):
         save_schema(
             config.models_dir / f"{model.model_name}-requests.yaml",
             {
-                "service-config": {
-                    "components": [
-                        '{{oarepo_requests.services.components.PublishDraftComponent}}("publish_draft", "delete_record")'
-                    ]
-                },
                 "draft": {
                     "requests": {
-                        "publish-draft": {
-                            "type": {
+                        "types": {
+                            "publish-draft": {
                                 "base-classes": [
                                     "oarepo_requests.types.publish_draft.PublishDraftRequestType"
-                                ]
-                            },
-                            "actions": {
-                                "submit": {
-                                    "class": "oarepo_requests.actions.publish_draft.PublishDraftSubmitAction",
-                                    "generate": False,
-                                }
-                            },
+                                ],
+                                "allowed-receiver-ref-types": ["user", "group"]
+                            }
                         }
                     }
                 },
                 "requests": {
-                    "delete-record": {
-                        "type": {
+                    "types": {
+
+                        "delete-record": {
+
                             "base-classes": [
                                 "oarepo_requests.types.delete_record.DeleteRecordRequestType"
-                            ]
+                            ],
+                            "allowed-receiver-ref-types": ["user", "group"]
                         },
-                        "actions": {
-                            "submit": {
-                                "class": "oarepo_requests.actions.delete_topic.DeleteTopicSubmitAction",
-                                "generate": False,
-                            }
-                        },
-                    }
-                },
+                        "edit-record": {
+
+                            "base-classes": [
+                                "oarepo_requests.types.edit_record.EditRecordRequestType"
+                            ],
+                            "allowed-receiver-ref-types": ["user", "group"]
+                        }
+                    },
+                }
             },
         )
 
