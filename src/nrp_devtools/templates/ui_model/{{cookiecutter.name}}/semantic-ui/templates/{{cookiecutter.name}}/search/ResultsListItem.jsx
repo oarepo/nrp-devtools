@@ -120,4 +120,6 @@ ResultsListItemWithState.propTypes = {
 ResultsListItemWithState.defaultProps = {
   currentQueryState: null,
 };
+
+export default ResultsListItemWithState
 {% endraw %}
