@@ -2,7 +2,7 @@ import dataclasses
 from enum import Enum
 from io import StringIO
 from pathlib import Path
-from typing import List, Optional, Set
+from typing import Dict, List, Optional, Set
 
 import dacite
 import yaml
@@ -47,6 +47,7 @@ class OARepoConfig:
     models: List[ModelConfig] = dataclasses.field(default_factory=list)
     uis: List[UIConfig] = dataclasses.field(default_factory=list)
     i18n: I18NConfig = dataclasses.field(default_factory=I18NConfig)
+    forks: Dict[str, str] = dataclasses.field(default_factory=dict)
 
     python = "python3"
     python_version = ">=3.9,<3.11"
@@ -115,6 +116,12 @@ class OARepoConfig:
         known_uis = ", ".join(sorted([ui.name for ui in self.uis]))
         raise KeyError(f"UI {ui_name} not found. Known UIs are: {known_uis}")
 
+    def add_fork(self, python_package: str, git_fork_url: str):
+        self.forks[python_package] = git_fork_url
+
+    def remove_fork(self, python_package: str):
+        del self.forks[python_package]
+
     @property
     def config_file(self):
         return self.repository_dir / "oarepo.yaml"
@@ -140,6 +147,7 @@ class OARepoConfig:
         self.uis = loaded.uis
         self.repository = loaded.repository
         self.i18n = loaded.i18n
+        self.forks = loaded.forks
 
     def save(self):
         if self.config_file.exists():

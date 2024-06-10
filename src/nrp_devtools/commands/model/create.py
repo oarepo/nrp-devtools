@@ -131,30 +131,27 @@ def create_model(config: OARepoConfig, *, model_name):
                                 "base-classes": [
                                     "oarepo_requests.types.publish_draft.PublishDraftRequestType"
                                 ],
-                                "allowed-receiver-ref-types": ["user", "group"]
+                                "allowed-receiver-ref-types": ["user", "group"],
                             }
                         }
                     }
                 },
                 "requests": {
                     "types": {
-
                         "delete-record": {
-
                             "base-classes": [
                                 "oarepo_requests.types.delete_record.DeleteRecordRequestType"
                             ],
-                            "allowed-receiver-ref-types": ["user", "group"]
+                            "allowed-receiver-ref-types": ["user", "group"],
                         },
                         "edit-record": {
-
                             "base-classes": [
                                 "oarepo_requests.types.edit_record.EditRecordRequestType"
                             ],
-                            "allowed-receiver-ref-types": ["user", "group"]
-                        }
+                            "allowed-receiver-ref-types": ["user", "group"],
+                        },
                     },
-                }
+                },
             },
         )
 
