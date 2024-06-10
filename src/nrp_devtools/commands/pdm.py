@@ -9,6 +9,7 @@ import tomli
 import tomli_w
 
 from nrp_devtools.commands.check import check_failed
+from nrp_devtools.commands.forks import apply_forks
 from nrp_devtools.commands.utils import install_python_modules, run_cmdline
 from nrp_devtools.config import OARepoConfig
 
@@ -94,6 +95,9 @@ def check_invenio_callable(config, will_fix=False, **kwargs):
 def install_python_repository(config, **kwargs):
     write_pdm_python(config)
     run_pdm(config, "install", "--dev", "--no-lock")
+
+    # apply forks
+    apply_forks(config)
 
     # fixup for uritemplate / uritemplate.py
     run_cmdline(
