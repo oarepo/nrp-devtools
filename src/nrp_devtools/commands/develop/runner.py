@@ -46,7 +46,9 @@ class Runner:
             env={**os.environ, **environment},
             pipesize=100000,
         )
-        self.python_reader_thread = threading.Thread(target=self._read_python_output, daemon=True)
+        self.python_reader_thread = threading.Thread(
+            target=self._read_python_output, daemon=True
+        )
         self.python_reader_thread.start()
         for i in range(5):
             time.sleep(2)
@@ -169,7 +171,10 @@ class Runner:
     def _read_python_output(self):
         while True:
             try:
-                if not self.python_server_process or not self.python_server_process.stdout:
+                if (
+                    not self.python_server_process
+                    or not self.python_server_process.stdout
+                ):
                     break
                 line: bytes = self.python_server_process.stdout.readline()
                 if line:
@@ -186,6 +191,7 @@ class Runner:
                             time.sleep(0.1)
             except:
                 break
+
 
 class FileCopier:
     class Handler(FileSystemEventHandler):

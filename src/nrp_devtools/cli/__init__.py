@@ -3,6 +3,7 @@ from .base import nrp_command
 from .build import build_command
 from .check import check_command
 from .develop import develop_command
+from .forks import forks_group
 from .image import image_command
 from .initialize import initialize_command
 from .model import model_group
@@ -24,4 +25,5 @@ __all__ = [
     "translations_command",
     "alembic_command",
     "image_command",
+    "forks_group",
 ]
