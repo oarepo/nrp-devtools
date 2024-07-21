@@ -11,6 +11,7 @@ from .run import run_command
 from .translations import translations_command
 from .ui import ui_group
 from .upgrade import upgrade_command
+from .watch import watch_command
 
 __all__ = [
     "nrp_command",
@@ -26,4 +27,5 @@ __all__ = [
     "alembic_command",
     "image_command",
     "forks_group",
+    "watch_command"
 ]
