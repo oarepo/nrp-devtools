@@ -36,7 +36,7 @@ def develop_command(
     context = {}
 
     commands = [
-        *(check_commands(context, local_packages, fix=True) if checks else ()),
+        *(check_commands(context, config, local_packages, fix=True) if checks else ()),
         copy_assets_to_webpack_build_dir,
     ]
     if not shell:

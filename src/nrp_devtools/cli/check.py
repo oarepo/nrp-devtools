@@ -16,15 +16,7 @@ from ..commands.docker import (
 )
 from ..commands.invenio import check_invenio_cfg, install_invenio_cfg
 from ..commands.opensearch import check_search, fix_custom_fields, fix_search
-from ..commands.pdm import (
-    build_requirements,
-    check_invenio_callable,
-    check_requirements,
-    check_virtualenv,
-    fix_virtualenv,
-    install_local_packages,
-    install_python_repository,
-)
+from ..commands.resolver import get_resolver
 from ..commands.s3 import (
     check_s3_bucket_exists,
     check_s3_location_in_database,
@@ -44,10 +36,11 @@ from .base import command_sequence, nrp_command
 def check_command(*, config: OARepoConfig, local_packages=None, fix=False, **kwargs):
     "Checks prerequisites for running the repository, initializes a build environment and rebuilds the repository."
     context = {}
-    return check_commands(context, local_packages, fix)
+    return check_commands(context, config, local_packages, fix)
 
 
-def check_commands(context, local_packages, fix):
+def check_commands(context, config, local_packages, fix):
+    resolver = get_resolver(config)
     return (
         #
         # infrastructure checks
@@ -62,15 +55,17 @@ def check_commands(context, local_packages, fix):
         #
         # virtualenv exists
         #
-        run_fixup(check_virtualenv, fix_virtualenv, fix=fix),
+        run_fixup(lambda config, **kwargs: resolver.check_virtualenv(**kwargs),
+                  lambda config, **kwargs: resolver.fix_virtualenv(**kwargs), fix=fix),
         #
         # requirements have been built
         #
-        run_fixup(check_requirements, build_requirements, fix=fix),
+        run_fixup(lambda config, **kwargs: resolver.check_requirements(**kwargs),
+                  lambda config, **kwargs: resolver.build_requirements(**kwargs), fix=fix),
         #
         # any local packages are installed inside the virtual environment
         #
-        make_step(install_local_packages, local_packages=local_packages),
+        make_step(lambda config, **kwargs: resolver.install_local_packages(**kwargs), local_packages=local_packages),
         #
         # invenio.cfg and variables are inside virtual environment
         #
@@ -78,7 +73,8 @@ def check_commands(context, local_packages, fix):
         #
         # can run invenio command
         #
-        run_fixup(check_invenio_callable, install_python_repository, fix=fix),
+        run_fixup(lambda config, **kwargs: resolver.check_invenio_callable(**kwargs),
+                  lambda config, **kwargs: resolver.install_python_repository(**kwargs), fix=fix),
         #
         # check that docker containers are running
         #
