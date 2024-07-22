@@ -11,7 +11,7 @@ from ..commands.model.compile import (
     install_model_compiler,
 )
 from ..commands.model.create import create_model
-from ..commands.pdm import install_python_repository
+from ..commands.resolver import get_resolver
 from ..commands.utils import make_step
 from ..config import OARepoConfig, ask_for_configuration
 from ..config.model_config import ModelConfig
@@ -60,6 +60,6 @@ def compile_model_command(*, config: OARepoConfig, model_name, **kwargs):
         make_step(compile_model_to_tempdir, model=model, tempdir=tempdir),
         make_step(copy_compiled_model, model=model, tempdir=tempdir),
         make_step(add_requirements_and_entrypoints, model=model, tempdir=tempdir),
-        make_step(install_python_repository),
+        make_step(lambda config: get_resolver(config).install_python_repository()),
         make_step(add_model_to_i18n, model=model),
     )

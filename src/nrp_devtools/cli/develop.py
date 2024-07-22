@@ -22,28 +22,39 @@ from .check import check_commands
     default=True,
     help="Check the environment before starting (default is to check, disable to get a faster startup)",
 )
+@click.option(
+    "--shell/--no-shell",
+    default=False,
+    help="Start the new development environment that is based on "
+         "shell script and does not suffer with problems with stdout/stderr",
+)
 @command_sequence()
 def develop_command(
-    *, config: OARepoConfig, local_packages=None, checks=True, **kwargs
+    *, config: OARepoConfig, local_packages=None, checks=True, shell=False, **kwargs
 ):
     """Starts the development environment for the repository."""
-    runner = Runner(config)
     context = {}
-    return (
-        *(check_commands(context, local_packages, fix=True) if checks else ()),
+
+    commands = [
+        *(check_commands(context, config, local_packages, fix=True) if checks else ()),
         copy_assets_to_webpack_build_dir,
-        make_step(
-            lambda config=None, runner=None: runner.start_python_server(
-                development_mode=True
+    ]
+    if not shell:
+        runner = Runner(config)
+        commands.extend([
+            make_step(
+                lambda config=None, runner=None: runner.start_python_server(
+                    development_mode=True
+                ),
+                runner=runner,
             ),
-            runner=runner,
-        ),
-        make_step(
-            lambda config=None, runner=None: runner.start_webpack_server(),
-            runner=runner,
-        ),
-        make_step(
-            lambda config=None, runner=None: runner.start_file_watcher(), runner=runner
-        ),
-        make_step(run_develop_controller, runner=runner, development_mode=True),
-    )
+            make_step(
+                lambda config=None, runner=None: runner.start_webpack_server(),
+                runner=runner,
+            ),
+            make_step(
+                lambda config=None, runner=None: runner.start_file_watcher(), runner=runner
+            ),
+            make_step(run_develop_controller, runner=runner, development_mode=True),
+        ])
+    return commands
