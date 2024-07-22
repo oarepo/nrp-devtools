@@ -11,7 +11,7 @@ export devtools_cli_directory="$nrp_directory/devtools"
 
 echo "base_directory: $base_directory"
 
-NRP_VERSION=0
+NRP_VERSION=1
 
 # This script runs the NRP repository tools
 
