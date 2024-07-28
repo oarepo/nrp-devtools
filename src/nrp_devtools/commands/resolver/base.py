@@ -142,7 +142,7 @@ class PythonResolver:
             x
             for x in dependencies
             if re.match(
-                r"^\s*oarepo\s*(\[[^\]]+\])?\s*==.*", x
+                r"^\s*oarepo\s*(\[[^\]]+\])?\s*[><=]+.*", x
             )  # take only oarepo package, discard others
         ][0]
         return oarepo_dependency, original_pyproject_file
