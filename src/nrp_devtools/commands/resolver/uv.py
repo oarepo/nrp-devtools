@@ -16,7 +16,7 @@ class UVResolver(PythonResolver):
             pyproject_toml = Path(subdir)/"pyproject.toml"
             requirements_txt = Path(subdir)/"requirements.txt"
 
-        self.run_uv_pip("compile", str(pyproject_toml), "-o", str(requirements_txt))
+        self.run_uv_pip("compile", "--prerelease", "allow", str(pyproject_toml), "-o", str(requirements_txt))
 
     def export_requirements(self, subdir=None):
         if subdir:
@@ -25,7 +25,7 @@ class UVResolver(PythonResolver):
 
     def install_project_packages(self):
         # convert the partial requirements to the real ones
-        self.run_uv_pip("compile", "requirements.txt", "-o", "requirements-resolved-local.txt")
+        self.run_uv_pip("compile", "--prerelease", "allow", "requirements.txt", "-o", "requirements-resolved-local.txt")
 
         # install the real ones
         self.run_uv_pip("sync", "requirements-resolved-local.txt")
