@@ -3,6 +3,7 @@ import click
 from ..commands.forks import apply_forks
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command
+from ..commands.resolver import get_resolver
 
 
 @nrp_command.group(name="forks")
@@ -35,4 +36,5 @@ def list_forks_command(*, config: OARepoConfig, **kwargs):
 @forks_group.command(name="apply", help="Apply all forks")
 @command_sequence()
 def apply_forks_command(*, config: OARepoConfig, **kwargs):
-    apply_forks(config)
+    resolver = get_resolver(config)
+    apply_forks(config, resolver)
