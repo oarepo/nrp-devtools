@@ -11,7 +11,7 @@ import tomli_w
 from nrp_devtools.commands.check import check_failed
 from nrp_devtools.commands.forks import apply_forks
 from nrp_devtools.config import OARepoConfig
-from nrp_devtools.commands.utils import install_python_modules, run_cmdline
+from nrp_devtools.commands.utils import install_python_modules, run_cmdline, call_pip
 from requirements.parser import Requirement
 
 
@@ -107,20 +107,7 @@ class PythonResolver:
         self.install_project_packages()
 
         # apply forks
-        apply_forks(self.config)
-        #
-        # probably not needed anymore
-        #
-        # # fixup for uritemplate / uritemplate.py
-        # run_cmdline(
-        #     self.config.venv_dir / "bin" / "pip",
-        #     "install",
-        #     "-U",
-        #     "--force-reinstall",
-        #     "--upgrade-strategy",
-        #     "eager",
-        #     "uritemplate",
-        # )
+        apply_forks(self.config, self)
 
 
     def create_oarepo_project_dir(self, output_directory: str):
@@ -162,6 +149,20 @@ class PythonResolver:
 
     def export_requirements(self, subdir=None):
         raise NotImplementedError()
+
+    def install_packages(self, config, *packages):
+        call_pip(
+            config.venv_dir,
+            "install",
+            "-U",
+            "--no-input",
+            "--force",
+            *packages,
+            no_environment=True,
+            raise_exception=True,
+            no_input=True,
+        )
+
 
     def install_local_packages(self, local_packages=None):
         if not local_packages:

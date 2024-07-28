@@ -57,3 +57,11 @@ class UVResolver(PythonResolver):
             raise_exception=True,
             **kwargs,
         )
+
+    def install_packages(self, config, *packages):
+        self.run_uv_pip(
+            "install",
+            "--force-reinstall",
+            "--no-deps",
+            *packages,
+        )

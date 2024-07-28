@@ -154,6 +154,7 @@ def make_step(
     *global_args,
     _if: Union[bool, Callable[[OARepoConfig], bool]] = True,
     _swallow_errors=False,
+    name=None,
     **global_kwargs,
 ):
     @wraps(fun)
@@ -171,19 +172,21 @@ def make_step(
                     )
                 else:
                     raise
-
+    if name:
+        step.__name__ = name
     return step
 
 
-def no_args(fun):
+def no_args(fun, name=None):
     @wraps(fun)
     def _no_args(*args, **kwargs):
         fun()
+    _no_args.__name__ = name or getattr(fun, "__name__", "no_args")
 
     return _no_args
 
 
-def run_fixup(check_function, fix_function, fix=True, **global_kwargs):
+def run_fixup(check_function, fix_function, fix=True, name=None, **global_kwargs):
     @wraps(check_function)
     def _run_fixup(config, **kwargs):
         try:
@@ -199,7 +202,8 @@ def run_fixup(check_function, fix_function, fix=True, **global_kwargs):
             check_function(
                 config, fast_fail=False, will_fix=False, **kwargs, **global_kwargs
             )
-
+    if name:
+        _run_fixup.__name__ = name
     return _run_fixup
 
 
