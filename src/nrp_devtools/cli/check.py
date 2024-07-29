@@ -63,10 +63,6 @@ def check_commands(context, config, local_packages, fix):
         run_fixup(lambda config, **kwargs: resolver.check_requirements(**kwargs),
                   lambda config, **kwargs: resolver.build_requirements(**kwargs), fix=fix),
         #
-        # any local packages are installed inside the virtual environment
-        #
-        make_step(lambda config, **kwargs: resolver.install_local_packages(**kwargs), local_packages=local_packages),
-        #
         # invenio.cfg and variables are inside virtual environment
         #
         run_fixup(check_invenio_cfg, install_invenio_cfg, fix=fix),
@@ -75,6 +71,10 @@ def check_commands(context, config, local_packages, fix):
         #
         run_fixup(lambda config, **kwargs: resolver.check_invenio_callable(**kwargs),
                   lambda config, **kwargs: resolver.install_python_repository(**kwargs), fix=fix),
+        #
+        # any local packages are installed inside the virtual environment
+        #
+        make_step(lambda config, **kwargs: resolver.install_local_packages(**kwargs), local_packages=local_packages),
         #
         # check that docker containers are running
         #
