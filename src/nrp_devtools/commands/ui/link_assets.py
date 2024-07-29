@@ -62,7 +62,7 @@ def copy_assets_to_webpack_build_dir(config: OARepoConfig):
     for kind, source_file, target_file in tqdm(
         _list_copied_files(copied), desc="Linking assets and statics"
     ):
-        print(kind, source_file, target_file)
+        # print(kind, source_file, target_file)
 
         # sometimes, the "invenio assets create" creates symlinks. If this happens,
         # remove the symlink as it will be replaced with a file copy to enable
