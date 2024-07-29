@@ -39,4 +39,5 @@ def apply_forks(config: OARepoConfig, resolver):
         )
         urls_to_install.append(fork_pip_url)
 
-    resolver.install_packages(config, *urls_to_install)
+    if urls_to_install:
+        resolver.install_packages(config, *urls_to_install)
