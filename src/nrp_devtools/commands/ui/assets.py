@@ -33,7 +33,7 @@ def collect_assets(config):
         "assets",
         "collect",
         f"{invenio_instance_path}/watch.list.json",
-        environ={"INVENIO_INSTANCE_PATH": str(config.invenio_instance_path)},
+        environ={"INVENIO_INSTANCE_PATH": str(config.invenio_instance_path), "FLASK_DEBUG": None},
     )
 
     run_cmdline(
@@ -41,7 +41,9 @@ def collect_assets(config):
         "webpack",
         "clean",
         "create",
-        environ={"INVENIO_INSTANCE_PATH": str(config.invenio_instance_path)},
+        # during create, if FLASK_DEBUG is set, invenio links directories, instead of copying
+        # disabling this as it brings problems if directories overlap (the case with templates)
+        environ={"INVENIO_INSTANCE_PATH": str(config.invenio_instance_path), "FLASK_DEBUG": None},
     )
 
     # "invenio collect" does collect assets, but links them instead of copying,

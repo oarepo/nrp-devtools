@@ -45,7 +45,12 @@ def run_cmdline(
     else:
         env = os.environ.copy()
 
-    env.update(environ or {})
+    for k, v in (environ or {}).items():
+        if v is None:
+            env.pop(k, None)
+        else:
+            env[k] = v
+
     cwd = Path(cwd).absolute()
     cmdline = [str(x) for x in cmdline]
 
