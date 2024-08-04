@@ -30,8 +30,34 @@ class PDMResolver(PythonResolver):
         )
 
     def install_project_packages(self):
-        self.write_pdm_python()
-        self.run_pdm("install", "--dev", "--no-lock")
+        self.run_pip("install", "--pre", "-r", "requirements.txt")
+        self.run_pip("install", "--no-deps", "-e", ".")
+
+    def run_pip(self, *args, subdir=None, **kwargs):
+
+        cwd = self.config.repository_dir
+        if subdir:
+            cwd = cwd / subdir
+
+        environ = {
+            **self.remove_virtualenv_from_env(),
+        }
+
+        venv_path = self.config.venv_dir
+        assert venv_path.exists()
+
+        environ["VIRTUAL_ENV"] = str(venv_path)
+
+        return run_cmdline(
+            str(venv_path / "bin" / "pip"),
+            *args,
+            cwd=cwd,
+            environ=environ,
+            no_environment=True,
+            raise_exception=True,
+            **kwargs,
+        )
+
 
 
     def run_pdm(self, *args, subdir=None, **kwargs):
