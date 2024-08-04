@@ -157,6 +157,8 @@ class PythonResolver:
             "-U",
             "--no-input",
             "--force",
+            "--no-deps",
+            "--pre",
             *packages,
             no_environment=True,
             raise_exception=True,
