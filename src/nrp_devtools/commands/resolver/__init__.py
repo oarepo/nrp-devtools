@@ -4,12 +4,12 @@ from .base import PythonResolver
 
 
 def get_resolver(config):
-    if os.environ.get("NRP_USE_UV"):
-        from .uv import UVResolver
-        return UVResolver(config)
-    else:
+    if os.environ.get("NRP_USE_PDM"):
         from .pdm import PDMResolver
         return PDMResolver(config)
+    else:
+        from .uv import UVResolver
+        return UVResolver(config)
 
 
 __all__ = (
