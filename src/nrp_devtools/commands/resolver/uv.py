@@ -10,13 +10,17 @@ class UVResolver(PythonResolver):
     Resolver for UV package manager from https://github.com/astral-sh/uv
     """
     def lock_python_repository(self, subdir=None):
-        pyproject_toml = "pyproject.toml"
-        requirements_txt = "requirements.txt"
+        pyproject_toml = Path("pyproject.toml")
+        requirements_txt = Path("requirements.txt")
         if subdir:
             pyproject_toml = Path(subdir)/"pyproject.toml"
             requirements_txt = Path(subdir)/"requirements.txt"
 
-        self.run_uv_pip("compile", "--prerelease", "allow", str(pyproject_toml), "-o", str(requirements_txt))
+        if requirements_txt.exists():
+            requirements_txt.unlink()
+
+        self.run_uv_pip("compile", "--prerelease", "allow",
+                        str(pyproject_toml), "-o", str(requirements_txt))
 
     def export_requirements(self, subdir=None):
         if subdir:
@@ -25,11 +29,20 @@ class UVResolver(PythonResolver):
 
     def install_project_packages(self):
         # convert the partial requirements to the real ones
-        self.run_uv_pip("compile", "--prerelease", "allow", "requirements.txt", "-o", "requirements-resolved-local.txt")
+
+        local_requirements = Path("requirements-resolved-local.txt")
+        if local_requirements.exists():
+            local_requirements.unlink()
+
+        self.run_uv_pip("compile", "--prerelease", "allow", "requirements.txt",
+                        "-o", str(local_requirements))
 
         # install the real ones
-        self.run_uv_pip("sync", "requirements-resolved-local.txt")
+        self.run_uv_pip("sync", str(local_requirements))
         self.run_uv_pip("install", "-e", ".")
+
+        if local_requirements.exists():
+            local_requirements.unlink()
 
 
     def run_uv_pip(self, *args, subdir=None, **kwargs):
