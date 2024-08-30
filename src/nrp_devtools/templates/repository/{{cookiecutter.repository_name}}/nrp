@@ -36,11 +36,11 @@ if [ -f ~/.envrc.local ] ; then
   source ~/.envrc.local
 fi
 
-
+PYTHON_VERSION="${PYTHON_VERSION:-3.12}"
 SUPPORTED_PYTHON_PATHS=(
-  /usr/bin/python3.10
-  /opt/homebrew/bin/python3.10
-  /usr/local/bin/python3.10
+  "/usr/bin/python${PYTHON_VERSION}"
+  "/opt/homebrew/bin/python${PYTHON_VERSION}"
+  "/usr/local/bin/python${PYTHON_VERSION}"
 )
 
 if [ -z "$PYTHON" ] ; then
