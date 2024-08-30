@@ -2,6 +2,7 @@ import tempfile
 from pathlib import Path
 
 import click
+import shutil
 
 from ..commands.model.compile import (
     add_model_to_i18n,
@@ -14,7 +15,7 @@ from ..commands.model.create import create_model
 from ..commands.resolver import get_resolver
 from ..commands.utils import make_step
 from ..config import OARepoConfig, ask_for_configuration
-from ..config.model_config import ModelConfig
+from ..config.model_config import ModelConfig, ModelFeature, BaseModel
 from .base import command_sequence, nrp_command
 
 
@@ -27,12 +28,36 @@ def model_group():
 
 @model_group.command(name="create", help="Create a new model")
 @click.argument("model_name")
+@click.option("--copy-model-config", help="Use a configuration file", type=click.Path())
 @command_sequence(save=True)
-def create_model_command(*, config: OARepoConfig, model_name, **kwargs):
+def create_model_command(*, config: OARepoConfig, model_name, copy_model_config=None, **kwargs):
     for model in config.models:
         if model.model_name == model_name:
             click.secho(f"Model {model_name} already exists", fg="red", err=True)
             return
+
+    if copy_model_config:
+        # if the config file is ready, just copy and add note to oarepo.yaml
+        # TODO: if possible, parse the values below from the copied config file
+        values = {
+            "base_model": BaseModel.empty,
+            "model_name": model_name,
+            "model_description": "",
+            "features": [
+                ModelFeature.tests,
+                ModelFeature.custom_fields,
+                ModelFeature.requests,
+                ModelFeature.files,
+                ModelFeature.drafts,
+                ModelFeature.relations
+            ]
+        }
+        values["model_package"] = ModelConfig.default_model_package(config, values)
+        values["api_prefix"] = ModelConfig.default_api_prefix(config, values)
+        values["pid_type"] = ModelConfig.default_pid_type(config, values)
+        config.models.append(ModelConfig(**values))
+        shutil.copy(copy_model_config, config.models_dir / f"{model_name}.yaml")
+        return ()
 
     def set_model_configuration(config: OARepoConfig, *args, **kwargs):
         config.add_model(
