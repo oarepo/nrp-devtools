@@ -10,6 +10,7 @@ dependencies = [
     "oarepo-runtime",
     "oarepo-ui",
     "python-dotenv",
+    "oarepo-global-search",
     {% if cookiecutter.use_oarepo_vocabularies -%}
     "oarepo-vocabularies",
     {%- endif %}
