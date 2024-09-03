@@ -41,9 +41,14 @@ def run_cmdline(
     no_environment=False,
 ):
     if no_environment:
-        env = {}
+        env = {
+        }
     else:
         env = os.environ.copy()
+
+    for k, v in OARepoConfig.global_environment().items():
+        if k not in env:
+            env[k] = v
 
     for k, v in (environ or {}).items():
         if v is None:
