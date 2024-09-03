@@ -36,6 +36,7 @@ def image_command(*, config: OARepoConfig, local_packages=None, checks=True, **k
                 "BUILDKIT_PROGRESS": "plain",
                 "BUILDPLATFORM": build_platform,
                 "DOCKER_BUILDKIT": "1",
+                **config.global_environment()
             },
         )
 
