@@ -55,7 +55,12 @@ def package(package):
 
 @app.route('/simple/<package>/<path:subpath>')
 def package_version(package, subpath):
-    url = f"{current_app.config['PYPI_SERVER_URL']}/../{subpath}"
+    if not hasattr(current_app, "pypi_packages"):
+        simple()
+    if package not in current_app.pypi_packages:
+        return "Package not found", 404, {"Content-Type": "text/plain"}
+
+    url = f"{current_app.config['PYPI_SERVER_URL']}/../{subpath}"       # on github pages, packages are on the same level as 'simple'
     resp = requests.get(url)
     return resp.content, resp.status_code, {"Content-Type": resp.headers.get("Content-Type")}
 
