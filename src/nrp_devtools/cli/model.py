@@ -17,6 +17,7 @@ from ..commands.utils import make_step
 from ..config import OARepoConfig, ask_for_configuration
 from ..config.model_config import ModelConfig, ModelFeature, BaseModel
 from .base import command_sequence, nrp_command
+from ..pypi_proxy.proxy import start_pypi_proxy
 
 
 @nrp_command.group(name="model")
@@ -76,6 +77,7 @@ def create_model_command(*, config: OARepoConfig, model_name, copy_model_config=
 @click.argument("model_name")
 @command_sequence()
 def compile_model_command(*, config: OARepoConfig, model_name, **kwargs):
+    start_pypi_proxy(config.pypi_proxy_target)
     model = config.get_model(model_name)
     # create a temporary directory using tempfile
     tempdir = str(Path(tempfile.mkdtemp()).resolve())

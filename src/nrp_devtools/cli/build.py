@@ -8,12 +8,14 @@ from ..commands.ui import build_production_ui, collect_assets, install_npm_packa
 from ..commands.utils import make_step, no_args, run_fixup
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command
+from ..pypi_proxy.proxy import start_pypi_proxy
 
 
 @nrp_command.command(name="build")
 @command_sequence()
 def build_command(*, config: OARepoConfig, **kwargs):
     """Builds the repository"""
+    start_pypi_proxy(config.pypi_proxy_target)
     return build_command_internal(config=config, **kwargs)
 
 

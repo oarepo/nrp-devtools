@@ -163,3 +163,12 @@ class OARepoConfig:
 
         if previous_config_data != current_data:
             self.config_file.write_text(current_data)
+
+    @classmethod
+    def global_environment(cls):
+        return {
+            "PIP_EXTRA_INDEX_URL": "http://127.0.0.1:4549/simple",
+            "UV_EXTRA_INDEX_URL": "http://127.0.0.1:4549/simple",
+        }
+
+    pypi_proxy_target = "https://oarepo.github.io/pypi/packages/simple"
