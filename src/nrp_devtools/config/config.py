@@ -167,6 +167,8 @@ class OARepoConfig:
     @classmethod
     def global_environment(cls):
         return {
-            "PIP_EXTRA_INDEX_URL": "https://oarepo.github.io/pypi/packages/simple",
-            "UV_EXTRA_INDEX_URL": "https://oarepo.github.io/pypi/packages/simple",
+            "PIP_EXTRA_INDEX_URL": "http://127.0.0.1:4549/simple",
+            "UV_EXTRA_INDEX_URL": "http://127.0.0.1:4549/simple",
         }
+
+    pypi_proxy_target = "https://oarepo.github.io/pypi/packages/simple"

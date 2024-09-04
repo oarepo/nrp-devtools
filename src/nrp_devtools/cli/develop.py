@@ -7,6 +7,7 @@ from ..commands.utils import make_step
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command
 from .check import check_commands
+from ..pypi_proxy.proxy import start_pypi_proxy
 
 
 @nrp_command.command(name="develop")
@@ -34,7 +35,7 @@ def develop_command(
 ):
     """Starts the development environment for the repository."""
     context = {}
-
+    start_pypi_proxy(config.pypi_proxy_target)
     commands = [
         *(check_commands(context, config, local_packages, fix=True) if checks else ()),
         copy_assets_to_webpack_build_dir,
