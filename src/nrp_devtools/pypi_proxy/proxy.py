@@ -20,11 +20,7 @@ def welcome():
 @app.route('/simple')
 def simple():
     url = current_app.config["PYPI_SERVER_URL"]
-    content_html = requests.get(url).text
-    content_html = content_html.replace('</br>', '<br>')
-    parser = etree.HTMLParser()
-    html_root = etree.fromstring(content_html, parser)
-    atags = html_root.findall(".//a")
+    atags, html_root = read_url_links(url)
     pypi_packages = set()
     for x in atags:
         package_name = x.attrib["href"].strip('/').split('/')[-1]
@@ -32,6 +28,17 @@ def simple():
         x.attrib["href"] = f"/simple/{package_name}"
     current_app.pypi_packages = pypi_packages
     return etree.tostring(html_root, encoding=str), 200, {"Content-Type": "text/html"}
+
+
+def read_url_links(url):
+    content_html = requests.get(url).text
+    # replace malformed <br> tags, without this they would get stripped out
+    content_html = content_html.replace('</br>', '<br>')
+    parser = etree.HTMLParser()
+    html_root = etree.fromstring(content_html, parser)
+    atags = html_root.findall(".//a")
+    return atags, html_root
+
 
 @app.route('/simple/<package>/')
 def package(package):
@@ -41,11 +48,7 @@ def package(package):
         return "Package not found", 404, {"Content-Type": "text/plain"}
 
     url = f"{current_app.config['PYPI_SERVER_URL']}/{package}"
-    content_html = requests.get(url).text
-    content_html = content_html.replace('</br>', '<br>')
-    parser = etree.HTMLParser()
-    html_root = etree.fromstring(content_html, parser)
-    atags = html_root.findall(".//a")
+    atags, html_root = read_url_links(url)
     for x in atags:
         x.attrib["href"] = f"/simple/{package}/{x.attrib['href'].split('/')[-1]}"
     return etree.tostring(html_root, encoding=str), 200, {"Content-Type": "text/html"}
