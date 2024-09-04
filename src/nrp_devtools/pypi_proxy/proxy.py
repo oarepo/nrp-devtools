@@ -60,7 +60,9 @@ def package_version(package, subpath):
     if package not in current_app.pypi_packages:
         return "Package not found", 404, {"Content-Type": "text/plain"}
 
-    url = f"{current_app.config['PYPI_SERVER_URL']}/../{subpath}"       # on github pages, packages are on the same level as 'simple'
+    # on github pages, packages are on the same level as 'simple'
+    # and PYPI_SERVER_URL ends with 'simple', that's why /../ is needed
+    url = f"{current_app.config['PYPI_SERVER_URL']}/../{subpath}"
     resp = requests.get(url)
     return resp.content, resp.status_code, {"Content-Type": resp.headers.get("Content-Type")}
 
