@@ -75,15 +75,24 @@ def create_model_command(*, config: OARepoConfig, model_name, copy_model_config=
 
 @model_group.command(name="compile", help="Compile a model")
 @click.argument("model_name")
+@click.option("--reinstall-builder/--keep-builder",
+              is_flag=True, help="Reinstall the model builder", default=True)
 @command_sequence()
-def compile_model_command(*, config: OARepoConfig, model_name, **kwargs):
+def compile_model_command(*, config: OARepoConfig, model_name, reinstall_builder, **kwargs):
     start_pypi_proxy(config.pypi_proxy_target)
     model = config.get_model(model_name)
     # create a temporary directory using tempfile
     tempdir = str(Path(tempfile.mkdtemp()).resolve())
 
+    if reinstall_builder:
+        steps = [
+            make_step(install_model_compiler, model=model)
+        ]
+    else:
+        steps = []
+
     return (
-        make_step(install_model_compiler, model=model),
+        *steps,
         make_step(compile_model_to_tempdir, model=model, tempdir=tempdir),
         make_step(copy_compiled_model, model=model, tempdir=tempdir),
         make_step(add_requirements_and_entrypoints, model=model, tempdir=tempdir),
