@@ -27,6 +27,7 @@ from ..commands.ui import check_ui, fix_ui
 from ..commands.utils import make_step, no_args, run_fixup
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command
+from ..pypi_proxy.proxy import start_pypi_proxy
 
 
 @nrp_command.command(name="check")
@@ -41,6 +42,8 @@ def check_command(*, config: OARepoConfig, local_packages=None, fix=False, **kwa
 
 def check_commands(context, config, local_packages, fix):
     resolver = get_resolver(config)
+    if fix:
+        start_pypi_proxy(config.pypi_proxy_target)
     return (
         #
         # infrastructure checks
