@@ -1,4 +1,5 @@
 from functools import partial
+from typing import Any
 
 import click
 
@@ -23,27 +24,36 @@ from ..commands.s3 import (
     fix_s3_bucket_exists,
     fix_s3_location_in_database,
 )
+from ..commands.types import StepFunctions
 from ..commands.ui import check_ui, fix_ui
 from ..commands.utils import make_step, no_args, run_fixup
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command
-from ..pypi_proxy.proxy import start_pypi_proxy
 
 
 @nrp_command.command(name="check")
 @click.option("--fix", is_flag=True, default=False)
 @click.option("--local-packages", "-e", multiple=True)
 @command_sequence()
-def check_command(*, config: OARepoConfig, local_packages=None, fix=False, **kwargs):
+def check_command(
+    *,
+    config: OARepoConfig,
+    local_packages: list[str] | None = None,
+    fix: bool = False,
+    **kwargs: Any,
+) -> StepFunctions:
     "Checks prerequisites for running the repository, initializes a build environment and rebuilds the repository."
     context = {}
     return check_commands(context, config, local_packages, fix)
 
 
-def check_commands(context, config, local_packages, fix):
+def check_commands(
+    context: dict[str, Any],
+    config: OARepoConfig,
+    local_packages: list[str] | None,
+    fix: bool,
+) -> StepFunctions:
     resolver = get_resolver(config)
-    if fix:
-        start_pypi_proxy(config.pypi_proxy_target)
     return (
         #
         # infrastructure checks
@@ -58,13 +68,19 @@ def check_commands(context, config, local_packages, fix):
         #
         # virtualenv exists
         #
-        run_fixup(lambda config, **kwargs: resolver.check_virtualenv(**kwargs),
-                  lambda config, **kwargs: resolver.fix_virtualenv(**kwargs), fix=fix),
+        run_fixup(
+            lambda config, **kwargs: resolver.check_virtualenv(**kwargs),
+            lambda config, **kwargs: resolver.fix_virtualenv(**kwargs),
+            fix=fix,
+        ),
         #
         # requirements have been built
         #
-        run_fixup(lambda config, **kwargs: resolver.check_requirements(**kwargs),
-                  lambda config, **kwargs: resolver.build_requirements(**kwargs), fix=fix),
+        run_fixup(
+            lambda config, **kwargs: resolver.check_requirements(**kwargs),
+            lambda config, **kwargs: resolver.build_requirements(**kwargs),
+            fix=fix,
+        ),
         #
         # invenio.cfg and variables are inside virtual environment
         #
@@ -72,12 +88,18 @@ def check_commands(context, config, local_packages, fix):
         #
         # can run invenio command
         #
-        run_fixup(lambda config, **kwargs: resolver.check_invenio_callable(**kwargs),
-                  lambda config, **kwargs: resolver.install_python_repository(**kwargs), fix=fix),
+        run_fixup(
+            lambda config, **kwargs: resolver.check_invenio_callable(**kwargs),
+            lambda config, **kwargs: resolver.install_python_repository(**kwargs),
+            fix=fix,
+        ),
         #
         # any local packages are installed inside the virtual environment
         #
-        make_step(lambda config, **kwargs: resolver.install_local_packages(**kwargs), local_packages=local_packages),
+        make_step(
+            lambda config, **kwargs: resolver.install_local_packages(**kwargs),
+            local_packages=local_packages,
+        ),
         #
         # check that docker containers are running
         #

@@ -1,8 +1,9 @@
+import shutil
 import tempfile
 from pathlib import Path
+from typing import Any
 
 import click
-import shutil
 
 from ..commands.model.compile import (
     add_model_to_i18n,
@@ -13,11 +14,11 @@ from ..commands.model.compile import (
 )
 from ..commands.model.create import create_model
 from ..commands.resolver import get_resolver
+from ..commands.types import StepFunctions
 from ..commands.utils import make_step
 from ..config import OARepoConfig, ask_for_configuration
-from ..config.model_config import ModelConfig, ModelFeature, BaseModel
+from ..config.model_config import BaseModel, ModelConfig, ModelFeature
 from .base import command_sequence, nrp_command
-from ..pypi_proxy.proxy import start_pypi_proxy
 
 
 @nrp_command.group(name="model")
@@ -31,16 +32,22 @@ def model_group():
 @click.argument("model_name")
 @click.option("--copy-model-config", help="Use a configuration file", type=click.Path())
 @command_sequence(save=True)
-def create_model_command(*, config: OARepoConfig, model_name, copy_model_config=None, **kwargs):
+def create_model_command(
+    *,
+    config: OARepoConfig,
+    model_name: str,
+    copy_model_config: Path | None = None,
+    **kwargs: Any,
+) -> StepFunctions:
     for model in config.models:
         if model.model_name == model_name:
             click.secho(f"Model {model_name} already exists", fg="red", err=True)
-            return
+            return ()
 
     if copy_model_config:
         # if the config file is ready, just copy and add note to oarepo.yaml
         # TODO: if possible, parse the values below from the copied config file
-        values = {
+        values: dict[str, Any] = {
             "base_model": BaseModel.empty,
             "model_name": model_name,
             "model_description": "",
@@ -50,8 +57,8 @@ def create_model_command(*, config: OARepoConfig, model_name, copy_model_config=
                 ModelFeature.requests,
                 ModelFeature.files,
                 ModelFeature.drafts,
-                ModelFeature.relations
-            ]
+                ModelFeature.relations,
+            ],
         }
         values["model_package"] = ModelConfig.default_model_package(config, values)
         values["api_prefix"] = ModelConfig.default_api_prefix(config, values)
@@ -75,19 +82,22 @@ def create_model_command(*, config: OARepoConfig, model_name, copy_model_config=
 
 @model_group.command(name="compile", help="Compile a model")
 @click.argument("model_name")
-@click.option("--reinstall-builder/--keep-builder",
-              is_flag=True, help="Reinstall the model builder", default=True)
+@click.option(
+    "--reinstall-builder/--keep-builder",
+    is_flag=True,
+    help="Reinstall the model builder",
+    default=True,
+)
 @command_sequence()
-def compile_model_command(*, config: OARepoConfig, model_name, reinstall_builder, **kwargs):
-    start_pypi_proxy(config.pypi_proxy_target)
+def compile_model_command(
+    *, config: OARepoConfig, model_name, reinstall_builder, **kwargs
+):
     model = config.get_model(model_name)
     # create a temporary directory using tempfile
     tempdir = str(Path(tempfile.mkdtemp()).resolve())
 
     if reinstall_builder:
-        steps = [
-            make_step(install_model_compiler, model=model)
-        ]
+        steps = [make_step(install_model_compiler, model=model)]
     else:
         steps = []
 

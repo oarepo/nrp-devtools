@@ -1,3 +1,5 @@
+from typing import Any
+
 import click
 
 from ..commands.utils import make_step, run_cmdline
@@ -7,10 +9,16 @@ from .base import command_sequence, nrp_command
 
 @nrp_command.command(name="image")
 @command_sequence()
-def image_command(*, config: OARepoConfig, local_packages=None, checks=True, **kwargs):
+def image_command(
+    *,
+    config: OARepoConfig,
+    local_packages: list[str] | None = None,
+    checks: bool = True,
+    **kwargs: Any,
+):
     """Starts the repository. Make sure to run `nrp check` first."""
 
-    def build_image(*args, **kwargs):
+    def build_image(*args: Any, **kwargs: Any):
         info_string = run_cmdline("docker", "info", grab_stdout=True)
         architecture_line = [
             x for x in info_string.split("\n") if "Architecture:" in x
@@ -36,7 +44,7 @@ def image_command(*, config: OARepoConfig, local_packages=None, checks=True, **k
                 "BUILDKIT_PROGRESS": "plain",
                 "BUILDPLATFORM": build_platform,
                 "DOCKER_BUILDKIT": "1",
-                **config.global_environment()
+                **config.global_environment(),
             },
         )
 

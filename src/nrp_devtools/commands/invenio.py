@@ -1,5 +1,6 @@
 import json
 import tempfile
+from typing import Any
 
 from nrp_devtools.commands.utils import run_cmdline
 from nrp_devtools.config import OARepoConfig
@@ -27,7 +28,7 @@ def get_repository_info(config, context=None):
     return repository_info
 
 
-def get_invenio_configuration(config, context, *args):
+def get_invenio_configuration(config, context, *args) -> Any:
     def _get_config(config, context):
         if context is not None and "repository_configuration" in context:
             return context["repository_configuration"]
@@ -67,7 +68,7 @@ def check_invenio_cfg(config: OARepoConfig, will_fix=False, **kwargs):
         )
 
 
-def install_invenio_cfg(config: OARepoConfig, **kwargs):
+def install_invenio_cfg(config: OARepoConfig, **kwargs: Any):
     instance_dir = config.invenio_instance_path
     instance_dir.mkdir(exist_ok=True, parents=True)
 

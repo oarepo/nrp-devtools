@@ -68,8 +68,8 @@ class BaseModel:
 
 @dataclasses.dataclass
 class ModelConfig:
-    prompts = {}
-    options = {}
+    prompts = {}  # untyped so that it is not generated as a member of a dataclass
+    options = {}  # untyped so that it is not generated as a member of a dataclass
 
     base_model: BaseModel
     prompts["base_model"] = "Base model to use for the repository"

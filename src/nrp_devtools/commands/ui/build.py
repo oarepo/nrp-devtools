@@ -1,8 +1,10 @@
+from typing import Any
+
 from nrp_devtools.commands.utils import run_cmdline
 from nrp_devtools.config import OARepoConfig
 
 
-def build_production_ui(config: OARepoConfig):
+def build_production_ui(config: OARepoConfig, **kwargs: Any):
     run_cmdline(
         config.invenio_command,
         "webpack",
