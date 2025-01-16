@@ -51,17 +51,17 @@ def develop_command(
         commands.extend(
             [
                 make_step(
-                    lambda config=None, _runner=None: runner.start_python_server(
+                    lambda config=None, runner=None: runner.start_python_server(
                         development_mode=True
                     ),
                     runner=runner,
                 ),
                 make_step(
-                    lambda config=None, _runner=None: runner.start_webpack_server(),
+                    lambda config=None, runner=None: runner.start_webpack_server(),
                     runner=runner,
                 ),
                 make_step(
-                    lambda config=None, _runner=None: runner.start_file_watcher(),
+                    lambda config=None, runner=None: runner.start_file_watcher(),
                     runner=runner,
                 ),
                 make_step(run_develop_controller, runner=runner, development_mode=True),
