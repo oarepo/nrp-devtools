@@ -1,5 +1,6 @@
 import shutil
 from pathlib import Path
+from typing import Any
 
 import click
 from tqdm import tqdm
@@ -9,7 +10,7 @@ from nrp_devtools.config import OARepoConfig
 from .assets import load_watched_paths
 
 
-def copy_assets_to_webpack_build_dir(config: OARepoConfig):
+def copy_assets_to_webpack_build_dir(config: OARepoConfig, **kwargs: Any):
     # assets = (config.site_dir / "assets").resolve()
     static = (config.ui_dir / "static").resolve()
 

@@ -27,7 +27,12 @@ from .base import command_sequence, nrp_command
     repository_dir_as_argument=True, repository_dir_must_exist=False, save=True
 )
 def initialize_command(
-    *, repository_dir, config: OARepoConfig, verbose, initial_config, no_input
+    *,
+    repository_dir: Path,
+    config: OARepoConfig,
+    verbose: bool,
+    initial_config: Path,
+    no_input: bool,
 ):
     """
     Initialize a new nrp project. Note: the project directory must be empty.
@@ -53,7 +58,7 @@ def initialize_command(
 
         initialize_repository(config)
         click.secho(
-            f"""
+            """
 Your repository is now initialized. 
 
 You can start the repository in development mode

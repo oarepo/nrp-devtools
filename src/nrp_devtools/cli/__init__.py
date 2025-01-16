@@ -12,7 +12,6 @@ from .translations import translations_command
 from .ui import ui_group
 from .upgrade import upgrade_command
 from .watch import watch_command
-from .proxy import start_proxy
 
 __all__ = [
     "nrp_command",
@@ -28,6 +27,5 @@ __all__ = [
     "alembic_command",
     "image_command",
     "forks_group",
-    "watch_command"
-    "start_proxy"
+    "watch_command",
 ]

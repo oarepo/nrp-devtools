@@ -1,6 +1,7 @@
 import re
 import time
 import traceback
+from typing import Any
 from urllib.parse import urlparse
 
 import click
@@ -31,7 +32,7 @@ def fix_docker_env(config: OARepoConfig, **kwargs):
     )
 
 
-def check_docker_callable(config: OARepoConfig, will_fix=False, **kwargs):
+def check_docker_callable(config: OARepoConfig, will_fix: bool = False, **kwargs: Any):
     try:
         run_cmdline("docker", "ps", grab_stdout=True, raise_exception=True)
     except:  # noqa
@@ -89,16 +90,16 @@ def retry(fn, config, context, tries=10, timeout=1, verbose=False):
     for i in range(tries):
         try:
             fn(config, context)
-            click.secho(f"  ... alive", fg="green")
+            click.secho("  ... alive", fg="green")
             return
         except KeyboardInterrupt:
             raise
-        except BaseException as e:
+        except BaseException:
             # catch SystemExit as well
             if verbose:
                 click.secho(traceback.format_exc(), fg="red")
             if i == tries - 1:
-                click.secho(f" ... failed", fg="red")
+                click.secho(" ... failed", fg="red")
                 raise
             click.secho(
                 f" ... not yet ready, sleeping for {int(timeout)} seconds",

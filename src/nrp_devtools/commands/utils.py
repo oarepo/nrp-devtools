@@ -4,13 +4,15 @@ import sys
 import traceback
 from functools import wraps
 from pathlib import Path
-from typing import Callable, Union
+from typing import Any, Callable, Literal, Union, overload
 
 import caseconverter
 import click
 from cookiecutter.main import cookiecutter
 
 from nrp_devtools.config import OARepoConfig
+
+from .types import StepFunction
 
 
 def run_cookiecutter(
@@ -28,21 +30,66 @@ def run_cookiecutter(
     )
 
 
+@overload
 def run_cmdline(
-    *cmdline,
-    cwd=".",
-    environ=None,
-    check_only=False,
-    grab_stdout=False,
-    grab_stderr=False,
-    discard_output=False,
-    raise_exception=False,
-    no_input=False,
-    no_environment=False,
-):
+    *_cmdline: str,
+    cwd: str = ".",
+    environ: dict[str, str | None] | None = None,
+    check_only: bool = False,
+    grab_stdout: Literal[True],
+    grab_stderr: bool = False,
+    discard_output: bool = False,
+    raise_exception: bool = False,
+    no_input: bool = False,
+    no_environment: bool = False,
+) -> str: ...
+
+
+@overload
+def run_cmdline(
+    *_cmdline: str,
+    cwd: str = ".",
+    environ: dict[str, str | None] | None = None,
+    check_only: bool = False,
+    grab_stdout: Literal[False],
+    grab_stderr: bool = False,
+    discard_output: bool = False,
+    raise_exception: bool = False,
+    no_input: bool = False,
+    no_environment: bool = False,
+) -> bool: ...
+
+
+@overload
+def run_cmdline(
+    *_cmdline: str,
+    cwd: str = ".",
+    environ: dict[str, str | None] | None = None,
+    check_only: bool = False,
+    grab_stdout: bool = False,
+    grab_stderr: bool = False,
+    discard_output: bool = False,
+    raise_exception: bool = False,
+    no_input: bool = False,
+    no_environment: bool = False,
+) -> bool: ...
+
+
+def run_cmdline(
+    *_cmdline: str,
+    cwd: str = ".",
+    environ: dict[str, str | None] | None = None,
+    check_only: bool = False,
+    grab_stdout: bool = False,
+    grab_stderr: bool = False,
+    discard_output: bool = False,
+    raise_exception: bool = False,
+    no_input: bool = False,
+    no_environment: bool = False,
+) -> Union[str, bool]:
+    cmdline = list(_cmdline)
     if no_environment:
-        env = {
-        }
+        env = {}
     else:
         env = os.environ.copy()
 
@@ -56,7 +103,7 @@ def run_cmdline(
         else:
             env[k] = v
 
-    cwd = Path(cwd).absolute()
+    cwd = str(Path(cwd).absolute())
     cmdline = [str(x) for x in cmdline]
 
     click.secho(f"Running {' '.join(cmdline)}", fg="blue", err=True)
@@ -72,7 +119,7 @@ def run_cmdline(
             if grab_stderr or discard_output:
                 kwargs["stderr"] = subprocess.PIPE
 
-            ret = subprocess.run(
+            ret: Any = subprocess.run(
                 cmdline,
                 check=True,
                 cwd=cwd,
@@ -166,7 +213,7 @@ def make_step(
     _swallow_errors=False,
     name=None,
     **global_kwargs,
-):
+) -> StepFunction:
     @wraps(fun)
     def step(config, **kwargs):
         should_call = _if if not callable(_if) else _if(config)
@@ -182,21 +229,25 @@ def make_step(
                     )
                 else:
                     raise
+
     if name:
         step.__name__ = name
     return step
 
 
-def no_args(fun, name=None):
+def no_args(fun, name=None) -> StepFunction:
     @wraps(fun)
     def _no_args(*args, **kwargs):
         fun()
+
     _no_args.__name__ = name or getattr(fun, "__name__", "no_args")
 
     return _no_args
 
 
-def run_fixup(check_function, fix_function, fix=True, name=None, **global_kwargs):
+def run_fixup(
+    check_function, fix_function, fix=True, name=None, **global_kwargs
+) -> StepFunction:
     @wraps(check_function)
     def _run_fixup(config, **kwargs):
         try:
@@ -212,6 +263,7 @@ def run_fixup(check_function, fix_function, fix=True, name=None, **global_kwargs
             check_function(
                 config, fast_fail=False, will_fix=False, **kwargs, **global_kwargs
             )
+
     if name:
         _run_fixup.__name__ = name
     return _run_fixup

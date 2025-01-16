@@ -1,6 +1,7 @@
 import os
 import re
 from pathlib import Path
+from typing import Any, cast
 
 import click
 
@@ -11,17 +12,18 @@ from nrp_devtools.commands.utils import run_cmdline
 from nrp_devtools.config import OARepoConfig
 
 
-def build_alembic(config):
-    click.secho(f"Generating alembic", fg="yellow")
+def build_alembic(config: OARepoConfig, **kwargs: Any) -> None:
+    click.secho("Generating alembic", fg="yellow")
 
     alembic_path = config.shared_dir / "alembic"
+    assert config.repository
     branch = config.repository.repository_package
     setup_alembic(config, branch, alembic_path)
 
-    click.secho(f"Alembic successfully generated", fg="green")
+    click.secho("Alembic successfully generated", fg="green")
 
 
-def setup_alembic(config: OARepoConfig, branch: str, alembic_path: Path):
+def setup_alembic(config: OARepoConfig, branch: str, alembic_path: Path) -> None:
     filecount = len(
         [x for x in alembic_path.iterdir() if x.is_file() and x.name.endswith(".py")]
     )
@@ -32,13 +34,13 @@ def setup_alembic(config: OARepoConfig, branch: str, alembic_path: Path):
         update_alembic(config, branch, alembic_path)
 
 
-def update_alembic(config: OARepoConfig, branch, alembic_path):
+def update_alembic(config: OARepoConfig, branch: str, alembic_path: Path) -> None:
     # alembic has been initialized, update heads and generate
 
     invenio_alembic_path = convert_to_invenio_alembic_path(config, alembic_path)
 
     files = [file_path.name for file_path in alembic_path.iterdir()]
-    file_numbers = []
+    file_numbers: list[int] = []
     for file in files:
         file_number_regex = re.findall(f"(?<={branch}_)\d+", file)
         if file_number_regex:
@@ -48,32 +50,44 @@ def update_alembic(config: OARepoConfig, branch, alembic_path):
         "Nrp install revision."
     )
     run_cmdline(
-        config.invenio_command, "alembic", "upgrade", "heads", cwd=config.repository_dir
+        config.invenio_command,
+        "alembic",
+        "upgrade",
+        "heads",
+        cwd=str(config.repository_dir),
     )
 
     new_revision = get_revision_number(
-        run_cmdline(
-            config.invenio_command,
-            "alembic",
-            "revision",
-            revision_message,
-            "-b",
-            branch,
-            "--path",
-            invenio_alembic_path,
-            grab_stdout=True,
-            cwd=config.repository_dir,
+        cast(
+            str,
+            run_cmdline(
+                config.invenio_command,
+                "alembic",
+                "revision",
+                revision_message,
+                "-b",
+                branch,
+                "--path",
+                invenio_alembic_path,
+                grab_stdout=True,
+                cwd=str(config.repository_dir),
+            ),
         ),
         file_revision_name_suffix,
     )
     rewrite_revision_file(alembic_path, new_file_number, branch, new_revision)
     fix_sqlalchemy_utils(alembic_path)
     run_cmdline(
-        config.invenio_command, "alembic", "upgrade", "heads", cwd=config.repository_dir
+        config.invenio_command,
+        "alembic",
+        "upgrade",
+        "heads",
+        cwd=str(config.repository_dir),
     )
 
 
-def convert_to_invenio_alembic_path(config, alembic_path):
+def convert_to_invenio_alembic_path(config: OARepoConfig, alembic_path: Path) -> str:
+    alembic_locations: list[str]
     (alembic_locations,) = get_invenio_configuration(config, {}, "ALEMBIC_LOCATIONS")
     resolved_alembic_path = alembic_path.resolve()
     for loc in alembic_locations:
@@ -84,7 +98,7 @@ def convert_to_invenio_alembic_path(config, alembic_path):
     )
 
 
-def intialize_alembic(config, branch, alembic_path):
+def intialize_alembic(config: OARepoConfig, branch: str, alembic_path: Path):
     initialize_db_if_not_initialized(config)
 
     # alembic has not been initialized yet ...

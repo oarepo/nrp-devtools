@@ -2,7 +2,7 @@ import dataclasses
 from enum import Enum
 from io import StringIO
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, cast
 
 import dacite
 import yaml
@@ -14,19 +14,19 @@ from .repository_config import RepositoryConfig
 from .ui_config import UIConfig
 
 serialization_config = dacite.Config()
-serialization_config.type_hooks = {
+serialization_config.type_hooks = {  # type: ignore
     Path: lambda x: Path(x),
-    ModelFeature: lambda x: ModelFeature[x] if isinstance(x, str) else x,
-    BaseModel: lambda x: BaseModel[x] if isinstance(x, str) else x,
+    ModelFeature: lambda x: ModelFeature[x] if isinstance(x, str) else x,  # type: ignore
+    BaseModel: lambda x: BaseModel[x] if isinstance(x, str) else x,  # type: ignore
     Set[ModelFeature]: lambda x: set(x),
 }
 
 
-def Enum_representer(dumper, data):
+def Enum_representer(dumper: Any, data: Any):
     return dumper.represent_scalar("tag:yaml.org,2002:str", data.value)
 
 
-def Set_representer(dumper, data):
+def Set_representer(dumper: Any, data: Any):
     return dumper.represent_sequence(
         "tag:yaml.org,2002:seq", list(data), flow_style=True
     )
@@ -35,8 +35,13 @@ def Set_representer(dumper, data):
 SafeRepresenter.add_multi_representer(Enum, Enum_representer)
 SafeRepresenter.add_representer(set, Set_representer)
 
+
+class UnknownSentinel:
+    pass
+
+
 UNKNOWN = (
-    object()
+    UnknownSentinel()
 )  # marker for unknown default value in get_model which will emit KeyError
 
 
@@ -52,7 +57,7 @@ class OARepoConfig:
     python = "python3"
     python_version = ">=3.9,<3.11"
 
-    overrides = {}
+    overrides: dict[str, str] = {}
 
     @property
     def venv_dir(self):
@@ -66,14 +71,17 @@ class OARepoConfig:
 
     @property
     def ui_dir(self):
+        assert self.repository
         return self.repository_dir / self.repository.ui_package
 
     @property
     def shared_dir(self):
+        assert self.repository
         return self.repository_dir / self.repository.shared_package
 
     @property
     def models_dir(self):
+        assert self.repository
         return self.repository_dir / self.repository.model_package
 
     @property
@@ -93,12 +101,14 @@ class OARepoConfig:
     def add_model(self, model: ModelConfig):
         self.models.append(model)
 
-    def get_model(self, model_name: str, default=UNKNOWN) -> ModelConfig:
+    def get_model(
+        self, model_name: str, default: ModelConfig | UnknownSentinel = UNKNOWN
+    ) -> ModelConfig:
         for model in self.models:
             if model.model_name == model_name:
                 return model
         if default is not UNKNOWN:
-            return default
+            return cast(ModelConfig, default)
         known_models = ", ".join(sorted([model.model_name for model in self.models]))
         raise KeyError(
             f"Model {model_name} not found. Known models are: {known_models}"
@@ -107,12 +117,14 @@ class OARepoConfig:
     def add_ui(self, ui: UIConfig):
         self.uis.append(ui)
 
-    def get_ui(self, ui_name: str, default=UNKNOWN) -> UIConfig:
+    def get_ui(
+        self, ui_name: str, default: UIConfig | UnknownSentinel = UNKNOWN
+    ) -> UIConfig:
         for ui in self.uis:
             if ui.name == ui_name:
                 return ui
         if default is not UNKNOWN:
-            return default
+            return cast(UIConfig, default)
         known_uis = ", ".join(sorted([ui.name for ui in self.uis]))
         raise KeyError(f"UI {ui_name} not found. Known UIs are: {known_uis}")
 
@@ -126,7 +138,7 @@ class OARepoConfig:
     def config_file(self):
         return self.repository_dir / "oarepo.yaml"
 
-    def load(self, extra_config=None):
+    def load(self, extra_config: Path | None = None):
         if extra_config:
             config_file = extra_config
         else:
@@ -167,8 +179,6 @@ class OARepoConfig:
     @classmethod
     def global_environment(cls):
         return {
-            "PIP_EXTRA_INDEX_URL": "http://127.0.0.1:4549/simple",
-            "UV_EXTRA_INDEX_URL": "http://127.0.0.1:4549/simple",
+            "PIP_EXTRA_INDEX_URL": "https://gitlab.cesnet.cz/api/v4/projects/1408/packages/pypi",
+            "UV_EXTRA_INDEX_URL": "https://gitlab.cesnet.cz/api/v4/projects/1408/packages/pypi",
         }
-
-    pypi_proxy_target = "https://oarepo.github.io/pypi/packages/simple"
