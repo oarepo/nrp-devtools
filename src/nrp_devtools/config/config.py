@@ -57,7 +57,7 @@ class OARepoConfig:
     python = "python3"
     python_version = ">=3.9,<3.11"
 
-    overrides: dict[str, str] = {}
+    overrides = {}  # untyped so that it is not generated as a member of the dataclass
 
     @property
     def venv_dir(self):
@@ -179,6 +179,6 @@ class OARepoConfig:
     @classmethod
     def global_environment(cls):
         return {
-            "PIP_EXTRA_INDEX_URL": "https://gitlab.cesnet.cz/api/v4/projects/1408/packages/pypi",
-            "UV_EXTRA_INDEX_URL": "https://gitlab.cesnet.cz/api/v4/projects/1408/packages/pypi",
+            "PIP_EXTRA_INDEX_URL": "https://gitlab.cesnet.cz/api/v4/projects/1408/packages/pypi/simple",
+            "UV_EXTRA_INDEX_URL": "https://gitlab.cesnet.cz/api/v4/projects/1408/packages/pypi/simple",
         }

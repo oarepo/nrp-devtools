@@ -1,6 +1,6 @@
 import dataclasses
 import re
-from typing import Any, Set
+from typing import Set
 
 from caseconverter import kebabcase, snakecase
 
@@ -68,7 +68,8 @@ class BaseModel:
 
 @dataclasses.dataclass
 class ModelConfig:
-    prompts: dict[str, str] = {}
+    prompts = {}  # untyped so that it is not generated as a member of a dataclass
+    options = {}  # untyped so that it is not generated as a member of a dataclass
 
     base_model: BaseModel
     prompts["base_model"] = "Base model to use for the repository"
@@ -90,8 +91,6 @@ class ModelConfig:
 
     features: Set[ModelFeature]
     prompts["features"] = "Model features"
-
-    options: dict[str, Any] = {}
 
     @classmethod
     def default_model_package(cls, config, values):
