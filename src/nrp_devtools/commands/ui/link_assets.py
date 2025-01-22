@@ -33,12 +33,17 @@ def copy_assets_to_webpack_build_dir(config: OARepoConfig, **kwargs: Any):
         existing[kind].add(target)
 
     copied = {k: {} for k in kinds}
+    ignored = []
 
     for kind, source_path, source_file in tqdm(
-        _list_source_files(watched_paths), desc="Checking paths"
+            _list_source_files(watched_paths), desc="Checking paths"
     ):
+        if kind == 'generated':
+            ignored.append(source_file)
+            continue
+
         target_file = (
-            config.invenio_instance_path / kind / source_file.relative_to(source_path)
+                config.invenio_instance_path / kind / source_file.relative_to(source_path)
         )
         copied[kind][source_file] = target_file
         if target_file in existing[kind]:
