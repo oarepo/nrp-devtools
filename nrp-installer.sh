@@ -18,7 +18,7 @@ set -e
 NRP_GIT_URL=${NRP_GIT_URL:-https://github.com/oarepo/nrp-devtools.git}
 NRP_GIT_BRANCH=${NRP_GIT_BRANCH:-main}
 
-SUPPORTED_PYTHON_VERSIONS=(3.10 3.9)
+SUPPORTED_PYTHON_VERSIONS=(3.12)
 
 if [ -z "$PYTHON" ] ; then
 
