@@ -46,7 +46,7 @@ def check_version(*args, expected_major, expected_minor=None, strict=False):
     try:
         result = run_cmdline(*args, grab_stdout=True, raise_exception=True)
     except:
-        check_failed(f"Command {' '.join(args)} is not callable.")
+        check_failed(f"Command {' '.join(args)} is not callable.", will_fix=False)
     version_result = re.search(r".*?([0-9]+)\.([0-9]+)\.([0-9]+)", result)
     major = int(version_result.groups()[0])
     minor = int(version_result.groups()[1])

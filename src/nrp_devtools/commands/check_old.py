@@ -10,5 +10,6 @@ def check_imagemagick_callable(config: OARepoConfig, **kwargs: Any):
         run_cmdline("convert", "--version", grab_stdout=True, raise_exception=True)
     except:
         check_failed(
-            "ImageMagick is not callable. Please install ImageMagick on your system."
+            "ImageMagick is not callable. Please install ImageMagick on your system.",
+            will_fix=False,
         )
