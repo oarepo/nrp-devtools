@@ -33,10 +33,15 @@ def copy_assets_to_webpack_build_dir(config: OARepoConfig, **kwargs: Any):
         existing[kind].add(target)
 
     copied = {k: {} for k in kinds}
+    ignored = []
 
     for kind, source_path, source_file in tqdm(
         _list_source_files(watched_paths), desc="Checking paths"
     ):
+        if kind == 'generated':
+            ignored.append(source_file)
+            continue
+
         target_file = (
             config.invenio_instance_path / kind / source_file.relative_to(source_path)
         )
@@ -45,7 +50,7 @@ def copy_assets_to_webpack_build_dir(config: OARepoConfig, **kwargs: Any):
             existing[kind].remove(target_file)
 
     for kind, existing_data in existing.items():
-        to_remove = [target for target in existing_data if target.exists()]
+        to_remove = [target for target in existing_data if target.exists() and target not in ignored]
         if to_remove:
             click.secho(
                 f"Error: following {kind} are not in the source directories, "
