@@ -166,12 +166,12 @@ def add_requirements_and_entrypoints(
     # load setup.cfg via configparser
     config_parser = configparser.ConfigParser()
     config_parser.read(setup_cfg)
-    dependencies = config_parser["options"].get("install_requires", "").split("\n")
+    dependencies = config_parser.get("options", {}).get("install_requires", "").split("\n")
     test_depedencies = (
-        config_parser["options.extras_require"].get("tests", "").split("\n")
+        config_parser.get("options.extras_require", {}).get("tests", "").split("\n")
     )
     entrypoints = {}
-    for ep_name, ep_values in config_parser["options.entry_points"].items():
+    for ep_name, ep_values in config_parser.get("options.entry_points", {}).items():
         entrypoints[ep_name] = ep_values.split("\n")
 
     pyproject = PyProject(config.repository_dir / "pyproject.toml")
