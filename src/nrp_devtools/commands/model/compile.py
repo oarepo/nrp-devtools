@@ -43,7 +43,7 @@ def install_model_compiler(config: OARepoConfig, *, model: ModelConfig):
     run_cmdline(
         venv_dir / "bin" / "pip",
         "install",
-        f"oarepo-model-builder",
+        "oarepo-model-builder",
     )
 
     with open(config.models_dir / model.model_config_file) as f:
@@ -166,12 +166,22 @@ def add_requirements_and_entrypoints(
     # load setup.cfg via configparser
     config_parser = configparser.ConfigParser()
     config_parser.read(setup_cfg)
-    dependencies = config_parser.get("options", {}).get("install_requires", "").split("\n")
-    test_depedencies = (
-        config_parser.get("options.extras_require", {}).get("tests", "").split("\n")
-    )
+    try:
+        dependencies = config_parser["options"]["install_requires"].split("\n")
+    except KeyError:
+        dependencies = []
+    try:
+        test_depedencies = config_parser["options.extras_require"]["tests"].split("\n")
+    except KeyError:
+        test_depedencies = []
+
+    try:
+        ep_view = config_parser["options.entry_points"]
+    except KeyError:
+        ep_view = {}
+
     entrypoints = {}
-    for ep_name, ep_values in config_parser.get("options.entry_points", {}).items():
+    for ep_name, ep_values in ep_view.items():
         entrypoints[ep_name] = ep_values.split("\n")
 
     pyproject = PyProject(config.repository_dir / "pyproject.toml")
