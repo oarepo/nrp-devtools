@@ -8,7 +8,6 @@ from typing import Any, Callable, Literal, Union, overload
 
 import caseconverter
 import click
-from cookiecutter.main import cookiecutter
 
 from nrp_devtools.config import OARepoConfig
 

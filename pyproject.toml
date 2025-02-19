@@ -19,11 +19,12 @@ dependencies = [
 
   # for code scaffolding
   "case-converter",
-  "cookiecutter",
   "cryptography",
+  "copier",
+  "copier_templates_extensions",
 
   # for managing requirements / installation
-  "pdm",
+  "uv",
   "tomli",
   "tomli-w",
   "requirements-parser",
