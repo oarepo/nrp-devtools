@@ -52,21 +52,22 @@ def initialize_command(
 
         template_path = os.environ.get("NRP_APP_TEMPLATE", "gh:oarepo/nrp-app-copier")
         initial_data = (
-            dataclasses.asdict(config.repository) if config.repository else None
+            dataclasses.asdict(config.repository) if config.repository else {}
         )
+        repository_name = repository_dir.name
+        initial_data.setdefault("repository_name", repository_name)
         copier.run_copy(template_path, repository_dir, initial_data, unsafe=True)
         answer_file = repository_dir / ".copier-answers.yml"
         with answer_file.open("r") as f:
             data: dict[str, str] = yaml.safe_load(f)
             config.repository = RepositoryConfig(
                 repository_human_name=data["repository_human_name"].strip(),
-                repository_name=data["repository_name"].strip(),
+                repository_name=repository_name,
                 repository_description=data["repository_description"].strip(),
-                languages=[
-                    x.strip() for x in data["languages"].strip().split(",") if x.strip()
-                ],
             )
-            config.i18n.languages = ["en"] + data["languages"].split(",")
+            config.i18n.languages = ["en"] + [
+                x.strip() for x in data["languages"].strip().split(",") if x.strip()
+            ]
 
     def generate_certificate_step(config: OARepoConfig):
         # generate the certificate
