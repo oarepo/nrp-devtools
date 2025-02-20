@@ -2,23 +2,20 @@ import dataclasses
 from enum import Enum
 from io import StringIO
 from pathlib import Path
-from typing import Any, List, Optional, Set, cast
+from typing import Any, List, Optional, cast
 
 import dacite
 import yaml
 from yaml.representer import SafeRepresenter
 
 from .i18n_config import I18NConfig
-from .model_config import BaseModel, ModelConfig, ModelFeature
+from .model_config import ModelConfig
 from .repository_config import RepositoryConfig
 from .ui_config import UIConfig
 
 serialization_config = dacite.Config()
 serialization_config.type_hooks = {  # type: ignore
     Path: lambda x: Path(x),
-    ModelFeature: lambda x: ModelFeature[x] if isinstance(x, str) else x,  # type: ignore
-    BaseModel: lambda x: BaseModel[x] if isinstance(x, str) else x,  # type: ignore
-    Set[ModelFeature]: lambda x: set(x),
 }
 
 
@@ -63,23 +60,19 @@ class OARepoConfig:
         return self.repository_dir / ".venv"
 
     @property
-    def pdm_dir(self):
-        return self.repository_dir / ".nrp/venv-pdm"
-
-    @property
     def ui_dir(self):
         assert self.repository
-        return self.repository_dir / self.repository.ui_package
+        return self.repository_dir / "ui"
 
     @property
     def shared_dir(self):
         assert self.repository
-        return self.repository_dir / self.repository.shared_package
+        return self.repository_dir / "common"
 
     @property
     def models_dir(self):
         assert self.repository
-        return self.repository_dir / self.repository.model_package
+        return self.repository_dir / "models"
 
     @property
     def invenio_instance_path(self):

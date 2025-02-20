@@ -38,7 +38,7 @@ def register_page_ui(config: OARepoConfig, *, ui_name: str):
     pyproject.add_entry_point(
         "invenio_base.blueprints",
         f"ui_{ui_config.name}",
-        f"{config.repository.ui_package}.{ui_config.name}:create_blueprint",
+        f"ui.{ui_config.name}:create_blueprint",
     )
 
     pyproject.save()
@@ -73,7 +73,7 @@ def create_model_ui(config: OARepoConfig, *, ui_name: str):
 
     model_config: ModelConfig = config.get_model(model_name)
 
-    ui_file = config.repository_dir / model_config.model_package / "models" / "ui.json"
+    ui_file = config.repository_dir / model_config.model_name / "models" / "ui.json"
     ui_components_dir = (
         config.ui_dir / ui_config.name / "templates" / "semantic-ui" / "components"
     )
@@ -89,13 +89,13 @@ def register_model_ui(config: OARepoConfig, *, ui_name: str):
     pyproject.add_entry_point(
         "invenio_base.blueprints",
         f"ui_{ui_config.name}",
-        f"{config.repository.ui_package}.{ui_config.name}:create_blueprint",
+        f"ui.{ui_config.name}:create_blueprint",
     )
 
     pyproject.add_entry_point(
         "invenio_assets.webpack",
         f"ui_{ui_config.name}",
-        f"{config.repository.ui_package}.{ui_config.name}.webpack:theme",
+        f"ui.{ui_config.name}.webpack:theme",
     )
 
     pyproject.save()

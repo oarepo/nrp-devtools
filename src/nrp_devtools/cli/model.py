@@ -1,10 +1,14 @@
+import os
 import shutil
 import tempfile
 from pathlib import Path
 from typing import Any
 
 import click
+import copier
+import yaml
 
+from ..commands.build import install_python_repository
 from ..commands.model.compile import (
     add_model_to_i18n,
     add_requirements_and_entrypoints,
@@ -12,12 +16,10 @@ from ..commands.model.compile import (
     copy_compiled_model,
     install_model_compiler,
 )
-from ..commands.model.create import create_model
-from ..commands.resolver import get_resolver
 from ..commands.types import StepFunctions
 from ..commands.utils import make_step
-from ..config import OARepoConfig, ask_for_configuration
-from ..config.model_config import BaseModel, ModelConfig, ModelFeature
+from ..config import OARepoConfig
+from ..config.model_config import ModelConfig
 from .base import command_sequence, nrp_command
 
 
@@ -46,38 +48,38 @@ def create_model_command(
 
     if copy_model_config:
         # if the config file is ready, just copy and add note to oarepo.yaml
-        # TODO: if possible, parse the values below from the copied config file
-        values: dict[str, Any] = {
-            "base_model": BaseModel.empty,
-            "model_name": model_name,
-            "model_description": "",
-            "features": [
-                ModelFeature.tests,
-                ModelFeature.custom_fields,
-                ModelFeature.requests,
-                ModelFeature.files,
-                ModelFeature.drafts,
-                ModelFeature.relations,
-            ],
-        }
-        values["model_package"] = ModelConfig.default_model_package(config, values)
-        values["api_prefix"] = ModelConfig.default_api_prefix(config, values)
-        values["pid_type"] = ModelConfig.default_pid_type(config, values)
-        config.models.append(ModelConfig(**values))
+        config.models.append(
+            ModelConfig(
+                model_name=model_name,
+                model_description="",
+                model_human_name=model_name,
+            )
+        )
         shutil.copy(copy_model_config, config.models_dir / f"{model_name}.yaml")
         return ()
 
-    def set_model_configuration(config: OARepoConfig, *args, **kwargs):
-        config.add_model(
-            ask_for_configuration(
-                config, ModelConfig, initial_values={"model_name": model_name}
-            )
+    def generate_model(config: OARepoConfig, *args: Any, **kwargs: Any):
+        template_path: str = os.environ.get(
+            "NRP_MODEL_TEMPLATE", "gh:oarepo/nrp-model-copier"
         )
+        assert config.repository
+        initial_data: dict[str, str] = {
+            "languages": ",".join(config.i18n.languages),
+            "model_name": model_name,
+        }
+        copier.run_copy(template_path, config.repository_dir, initial_data, unsafe=True)
+        answer_file = config.repository_dir / f".copier-answers-{model_name}.yml"
+        with answer_file.open("r") as f:
+            data: dict[str, str] = yaml.safe_load(f)
+            config.add_model(
+                ModelConfig(
+                    model_human_name=data["model_human_name"].strip(),
+                    model_name=model_name,
+                    model_description=data["model_description"].strip(),
+                )
+            )
 
-    return (
-        set_model_configuration,
-        make_step(create_model, model_name=model_name),
-    )
+    return (generate_model,)
 
 
 @model_group.command(name="compile", help="Compile a model")
@@ -90,7 +92,7 @@ def create_model_command(
 )
 @command_sequence()
 def compile_model_command(
-    *, config: OARepoConfig, model_name, reinstall_builder, **kwargs
+    *, config: OARepoConfig, model_name: str, reinstall_builder: bool, **kwargs: Any
 ):
     model = config.get_model(model_name)
     # create a temporary directory using tempfile
@@ -106,6 +108,6 @@ def compile_model_command(
         make_step(compile_model_to_tempdir, model=model, tempdir=tempdir),
         make_step(copy_compiled_model, model=model, tempdir=tempdir),
         make_step(add_requirements_and_entrypoints, model=model, tempdir=tempdir),
-        make_step(lambda config: get_resolver(config).install_python_repository()),
+        install_python_repository,
         make_step(add_model_to_i18n, model=model),
     )

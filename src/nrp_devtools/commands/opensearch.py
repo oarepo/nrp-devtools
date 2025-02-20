@@ -18,6 +18,7 @@ def fix_search(config: OARepoConfig, context=None, **kwargs):
     if opensearch_status != "ok":
         run_cmdline(config.invenio_command, "oarepo", "index", "init")
         run_cmdline(config.invenio_command, "oarepo", "cf", "init")
+        run_cmdline(config.invenio_command, "communities", "custom-fields", "init")
 
     # make the repository info reinitialize during the next check
     context.pop("repository_info")
@@ -25,6 +26,7 @@ def fix_search(config: OARepoConfig, context=None, **kwargs):
 
 def fix_custom_fields(config: OARepoConfig, context=None, **kwargs):
     run_cmdline(config.invenio_command, "oarepo", "cf", "init")
+    run_cmdline(config.invenio_command, "communities", "custom-fields", "init")
 
     # make the repository info reinitialize during the next check
     context.pop("repository_info")

@@ -5,10 +5,6 @@ from .base import PythonResolver
 from nrp_devtools.commands.utils import run_cmdline
 
 
-class UVResolver(PythonResolver):
-    """
-    Resolver for UV package manager from https://github.com/astral-sh/uv
-    """
     def lock_python_repository(self, subdir=None):
         pyproject_toml = Path("pyproject.toml")
         requirements_txt = Path("requirements.txt")

@@ -122,7 +122,7 @@ def create_model(config: OARepoConfig, model_name, ui_name, ui_endpoint, **kwarg
 
         model_data = json.loads(
             (
-                config.repository_dir / model.model_package / "models" / "records.json"
+                config.repository_dir / model.model_name / "models" / "records.json"
             ).read_text()
         )
         api_service = model_data["model"]["service-config"]["service-id"]

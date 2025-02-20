@@ -9,6 +9,7 @@ import yaml
 
 from ..config import OARepoConfig
 from ..config.repository_config import RepositoryConfig
+from ..x509 import generate_selfsigned_cert
 from .base import command_sequence, nrp_command
 
 
@@ -61,7 +62,40 @@ def initialize_command(
                 repository_human_name=data["repository_human_name"].strip(),
                 repository_name=data["repository_name"].strip(),
                 repository_description=data["repository_description"].strip(),
+                languages=[
+                    x.strip() for x in data["languages"].strip().split(",") if x.strip()
+                ],
             )
             config.i18n.languages = ["en"] + data["languages"].split(",")
 
-    return (initialize_step,)
+    def generate_certificate_step(config: OARepoConfig):
+        # generate the certificate
+        cert, key = generate_selfsigned_cert("localhost", ["127.0.0.1"])
+        (config.repository_dir / "docker" / "development.crt").write_bytes(cert)
+        (config.repository_dir / "docker" / "development.key").write_bytes(key)
+
+    def link_variables_step(config: OARepoConfig):
+        # link the variables
+        (config.repository_dir / "docker" / ".env").symlink_to(
+            config.repository_dir / "variables"
+        )
+
+    def mark_nrp_executable_step(config: OARepoConfig):
+        # mark the nrp command executable
+        (config.repository_dir / "nrp").chmod(0o755)
+
+    def set_up_i18n_step(config: OARepoConfig):
+        # set up the i18n
+        config.i18n.babel_source_paths = [
+            "common",
+            "ui",
+        ]
+        config.i18n.i18next_source_paths = ["ui"]
+
+    return (
+        initialize_step,
+        generate_certificate_step,
+        link_variables_step,
+        mark_nrp_executable_step,
+        set_up_i18n_step,
+    )

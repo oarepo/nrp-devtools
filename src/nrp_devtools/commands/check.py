@@ -7,7 +7,7 @@ class CheckFailedException(Exception):
     pass
 
 
-def check_failed(message, will_fix):
+def check_failed(message: str, will_fix: bool):
     if will_fix:
         click.secho(message, fg="yellow", err=True)
         raise CheckFailedException()

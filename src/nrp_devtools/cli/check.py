@@ -3,6 +3,14 @@ from typing import Any
 
 import click
 
+from ..commands.build import (
+    build_requirements,
+    check_invenio_callable,
+    check_requirements,
+    check_virtualenv,
+    fix_virtualenv,
+    install_python_repository,
+)
 from ..commands.check_old import check_imagemagick_callable
 from ..commands.db import check_db, fix_db
 from ..commands.docker import (
@@ -17,7 +25,6 @@ from ..commands.docker import (
 )
 from ..commands.invenio import check_invenio_cfg, install_invenio_cfg
 from ..commands.opensearch import check_search, fix_custom_fields, fix_search
-from ..commands.resolver import get_resolver
 from ..commands.s3 import (
     check_s3_bucket_exists,
     check_s3_location_in_database,
@@ -53,7 +60,6 @@ def check_commands(
     local_packages: list[str] | None,
     fix: bool,
 ) -> StepFunctions:
-    resolver = get_resolver(config)
     return (
         #
         # infrastructure checks
@@ -69,16 +75,16 @@ def check_commands(
         # virtualenv exists
         #
         run_fixup(
-            lambda config, **kwargs: resolver.check_virtualenv(**kwargs),
-            lambda config, **kwargs: resolver.fix_virtualenv(**kwargs),
+            check_virtualenv,
+            fix_virtualenv,
             fix=fix,
         ),
         #
         # requirements have been built
         #
         run_fixup(
-            lambda config, **kwargs: resolver.check_requirements(**kwargs),
-            lambda config, **kwargs: resolver.build_requirements(**kwargs),
+            check_requirements,
+            build_requirements,
             fix=fix,
         ),
         #
@@ -89,16 +95,9 @@ def check_commands(
         # can run invenio command
         #
         run_fixup(
-            lambda config, **kwargs: resolver.check_invenio_callable(**kwargs),
-            lambda config, **kwargs: resolver.install_python_repository(**kwargs),
+            check_invenio_callable,
+            install_python_repository,
             fix=fix,
-        ),
-        #
-        # any local packages are installed inside the virtual environment
-        #
-        make_step(
-            lambda config, **kwargs: resolver.install_local_packages(**kwargs),
-            local_packages=local_packages,
         ),
         #
         # check that docker containers are running

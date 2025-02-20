@@ -96,21 +96,21 @@ def compile_model_to_tempdir(config: OARepoConfig, *, model: ModelConfig, tempdi
 
 def copy_compiled_model(config: OARepoConfig, *, model: ModelConfig, tempdir):
     click.secho(
-        f"Copying compiled model {model.model_name} from {tempdir} to {model.model_package}",
+        f"Copying compiled model {model.model_name} from {tempdir} to {model.model_name}",
         fg="yellow",
     )
-    alembic_path = Path(_get_alembic_path(tempdir, model.model_package)).resolve()
+    alembic_path = Path(_get_alembic_path(tempdir, model.model_name)).resolve()
 
     remove_all_files_in_directory(
-        config.repository_dir / model.model_package, except_of=alembic_path
+        config.repository_dir / model.model_name, except_of=alembic_path
     )
 
     copy_all_files_but_keep_existing(
-        Path(tempdir) / model.model_package, config.repository_dir / model.model_package
+        Path(tempdir) / model.model_name, config.repository_dir / model.model_name
     )
 
     click.secho(
-        f"Compiled model {model.model_name} successfully copied to {model.model_package}",
+        f"Compiled model {model.model_name} successfully copied to {model.model_name}",
         fg="green",
     )
 
@@ -196,6 +196,19 @@ def add_requirements_and_entrypoints(
             val = [x.strip() for x in val.split("=")]
             pyproject.add_entry_point(ep_name, val[0], val[1])
 
+    # ui entrypoints
+    pyproject.add_entry_point(
+        "invenio_base.blueprints",
+        f"ui_{model.model_name}",
+        f"ui.{model.model_name}:create_blueprint",
+    )
+
+    pyproject.add_entry_point(
+        "invenio_assets.webpack",
+        f"ui_{model.model_name}",
+        f"ui.{model.model_name}.webpack:theme",
+    )
+
     pyproject.save()
 
     click.secho(
@@ -206,4 +219,4 @@ def add_requirements_and_entrypoints(
 
 def add_model_to_i18n(config: OARepoConfig, *, model, **kwargs):
     i18n_config = config.i18n
-    i18n_config.babel_source_paths.append(model.model_package)
+    i18n_config.babel_source_paths.append(model.model_name)
