@@ -57,7 +57,9 @@ def initialize_command(
         )
         repository_name = repository_dir.name
         initial_data.setdefault("repository_name", repository_name)
-        copier.run_copy(template_path, repository_dir, initial_data, unsafe=True)
+        copier.run_copy(
+            template_path, repository_dir, initial_data, unsafe=True, vcs_ref="rdm-12"
+        )
         answer_file = repository_dir / ".copier-answers.yml"
         with answer_file.open("r") as f:
             data: dict[str, str] = yaml.safe_load(f)

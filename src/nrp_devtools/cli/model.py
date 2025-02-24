@@ -67,7 +67,13 @@ def create_model_command(
             "languages": ",".join(config.i18n.languages),
             "model_name": model_name,
         }
-        copier.run_copy(template_path, config.repository_dir, initial_data, unsafe=True)
+        copier.run_copy(
+            template_path,
+            config.repository_dir,
+            initial_data,
+            unsafe=True,
+            vcs_ref="rdm-12",
+        )
         answer_file = config.repository_dir / f".copier-answers-{model_name}.yml"
         with answer_file.open("r") as f:
             data: dict[str, str] = yaml.safe_load(f)

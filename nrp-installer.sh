@@ -16,7 +16,7 @@
 set -e
 
 NRP_GIT_URL=${NRP_GIT_URL:-https://github.com/oarepo/nrp-devtools.git}
-NRP_GIT_BRANCH=${NRP_GIT_BRANCH:-main}
+NRP_GIT_BRANCH=${NRP_GIT_BRANCH:-rdm-12}
 
 SUPPORTED_PYTHON_VERSIONS=(3.12)
 
@@ -31,7 +31,7 @@ if [ -z "$PYTHON" ] ; then
   done
 
   if [ -z "$PYTHON" ] ; then
-    echo "No supported python version found. Please install python 3.9 or higher
+    echo "No supported python version found. Please install python 3.12
     or set the PYTHON environment variable to the python executable."
     exit 1
   fi
