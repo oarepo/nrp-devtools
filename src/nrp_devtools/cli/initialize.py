@@ -7,6 +7,7 @@ import click
 import copier
 import yaml
 
+from ..commands.utils import run_cmdline
 from ..config import OARepoConfig
 from ..config.repository_config import RepositoryConfig
 from ..x509 import generate_selfsigned_cert
@@ -93,10 +94,43 @@ def initialize_command(
         ]
         config.i18n.i18next_source_paths = ["ui"]
 
+    def commit_to_git_step(config: OARepoConfig):
+        run_cmdline("git", "init", cwd=str(config.repository_dir), raise_exception=True)
+        run_cmdline(
+            "git", "add", ".", cwd=str(config.repository_dir), raise_exception=True
+        )
+        run_cmdline(
+            "git",
+            "commit",
+            "-am",
+            "Initial commit",
+            cwd=str(config.repository_dir),
+            raise_exception=True,
+        )
+
+    def show_next_steps_step(config: OARepoConfig):
+        click.secho(
+            """
+Your repository is now initialized. 
+
+To test it out, start the repository in development mode
+via ./nrp develop and head to https://127.0.0.1:5000/
+to check that everything has been installed correctly.
+
+Then add metadata models via ./nrp model create <model_name>,
+edit the model and compile it via ./nrp model compile <model_name>.
+
+To generate a default UI for the model, run ./nrp ui detail <model_name>.
+""",
+            fg="green",
+        )
+
     return (
         initialize_step,
         generate_certificate_step,
         link_variables_step,
         mark_nrp_executable_step,
         set_up_i18n_step,
+        commit_to_git_step,
+        show_next_steps_step,
     )
