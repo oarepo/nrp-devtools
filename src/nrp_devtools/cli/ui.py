@@ -78,14 +78,7 @@ def create_pages(config: OARepoConfig, ui_name, ui_endpoint, **kwargs):
     )
 
 
-@ui_group.group(name="model")
-def model_group():
-    """
-    UI model management commands
-    """
-
-
-@model_group.command(name="detail", help="Scaffold detail page for a new model")
+@ui_group.command(name="detail", help="Scaffold detail page for a new model")
 @click.argument("model_name")
 @click.option(
     "--primitive-type",
