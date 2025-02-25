@@ -193,6 +193,17 @@ pass
         if "import sqlalchemy_utils.types" not in data:
             data = "import sqlalchemy_utils.types\n" + data
             modified = True
+
+        # replace ChoiceType with String (in RDM, this is a manual migration, not generated one)
+        orig_data = data
+        data = re.sub(
+            r"sqlalchemy_utils.types.choice.ChoiceType\(length=(\d+)\)",
+            r"sa.String(\1)",
+            data,
+        )
+        if orig_data != data:
+            modified = True
+
         if modified:
             fn.write_text(data)
 

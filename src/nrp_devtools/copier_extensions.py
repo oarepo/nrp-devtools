@@ -26,4 +26,9 @@ class ContextUpdater(ContextHook):
                 "repository_description"
             ].strip()
         if "languages" in context and context["languages"]:
-            context["languages"] = [x.strip() for x in context["languages"].split(",")]
+            # split on ',' or whitespaces
+            context["languages"] = [
+                x.strip()
+                for x in context["languages"].replace(",", " ").split()
+                if x.strip() and x.strip() != "en"
+            ]

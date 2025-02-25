@@ -9,5 +9,5 @@ from .base import command_sequence, nrp_command
 @nrp_command.command(name="alembic")
 @command_sequence()
 def alembic_command(*, config: OARepoConfig, **kwargs: Any) -> StepFunctions:
-    """Builds the repository"""
+    """Creates and applies alembic migrations"""
     return (build_alembic,)
