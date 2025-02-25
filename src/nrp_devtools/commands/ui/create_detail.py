@@ -94,7 +94,7 @@ class ComponentGenerator:
                 if component:
                     output += ["      <%s d={d.%s} />" % (component, key)]
                 else:
-                    output += ["    <ITableArrayValue d={d.%s} />" % key]
+                    output += ["    <ITableArrayValue value={d.%s} />" % key]
                 output += ["  </ITableField>"]
         output += ["</ITable>"]
         return output
