@@ -6,6 +6,7 @@ from ..commands.develop import Runner
 from ..commands.develop.controller import run_develop_controller
 from ..commands.types import StepFunction, StepFunctions
 from ..commands.ui.link_assets import copy_assets_to_webpack_build_dir
+from ..commands.ui.translations import copy_translations
 from ..commands.utils import make_step
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command
@@ -45,6 +46,7 @@ def develop_command(
     commands: list[StepFunction] = [
         *(check_commands(context, config, local_packages, fix=True) if checks else ()),
         copy_assets_to_webpack_build_dir,
+        copy_translations,
     ]
     if not shell:
         runner = Runner(config)

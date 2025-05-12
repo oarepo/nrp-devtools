@@ -12,7 +12,12 @@ from ..commands.build import (
 )
 from ..commands.invenio import install_invenio_cfg
 from ..commands.types import StepFunctions
-from ..commands.ui import build_production_ui, collect_assets, install_npm_packages
+from ..commands.ui import (
+    build_production_ui,
+    collect_assets,
+    copy_translations,
+    install_npm_packages,
+)
 from ..commands.utils import make_step, no_args, run_fixup
 from ..config import OARepoConfig
 from .base import command_sequence, nrp_command
@@ -52,6 +57,7 @@ def build_command_internal(*, config: OARepoConfig, **kwargs: Any) -> StepFuncti
         install_invenio_cfg,
         collect_assets,
         install_npm_packages,
+        copy_translations,
         build_production_ui,
         no_args(partial(click.secho, "Successfully built the repository", fg="green")),
     )
