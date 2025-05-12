@@ -45,8 +45,8 @@ def develop_command(
     context: dict[str, Any] = {}
     commands: list[StepFunction] = [
         *(check_commands(context, config, local_packages, fix=True) if checks else ()),
-        copy_assets_to_webpack_build_dir,
         copy_translations,
+        copy_assets_to_webpack_build_dir,
     ]
     if not shell:
         runner = Runner(config)

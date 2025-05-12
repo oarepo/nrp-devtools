@@ -50,9 +50,9 @@ def build_command_internal(*, config: OARepoConfig, **kwargs: Any) -> StepFuncti
             name="install_python_repository",
         ),
         install_invenio_cfg,
+        copy_translations,
         collect_assets,
         install_npm_packages,
-        copy_translations,
         build_production_ui,
         no_args(partial(click.secho, "Successfully built the repository", fg="green")),
     )
