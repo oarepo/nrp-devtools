@@ -11,7 +11,7 @@ def copy_translations(config: OARepoConfig, **kwargs: Any):
     # copy translations from site_packages' oarepo/collected_translations to site_packages,
     # overwriting any existing ones
     site_packages_dir = run_cmdline(
-        "python",
+        str(config.venv_dir / "bin" / "python"),
         "-c",
         "import site; print(site.getsitepackages()[0])",
         grab_stdout=True,
@@ -27,6 +27,8 @@ def copy_translations(config: OARepoConfig, **kwargs: Any):
         )
         return
     for translation_file in collected_translations_dir.glob("**/*"):
+        if translation_file.is_dir():
+            continue
         relative_path = translation_file.resolve().relative_to(
             collected_translations_dir.resolve()
         )
