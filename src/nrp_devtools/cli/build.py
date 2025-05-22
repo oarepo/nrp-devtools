@@ -25,8 +25,21 @@ from .base import command_sequence, nrp_command
 
 @nrp_command.command(name="build")
 @command_sequence()
-def build_command(*, config: OARepoConfig, **kwargs: Any) -> StepFunctions:
+@click.option(
+    "--override-config",
+    multiple=True,
+    help="Override the default configuration file with a custom one. "
+    "Currently venv_dir=... and invenio_instance_path=... are supported.",
+)
+def build_command(
+    *, config: OARepoConfig, override_config: list[str], **kwargs: Any
+) -> StepFunctions:
     """Builds the repository"""
+    overrides = {
+        x[0].strip(): x[1].strip() for x in (x.split("=") for x in override_config)
+    }
+    if overrides:
+        config.overrides.update(overrides)
     return build_command_internal(config=config, **kwargs)
 
 

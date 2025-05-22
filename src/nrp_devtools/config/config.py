@@ -57,25 +57,35 @@ class OARepoConfig:
 
     @property
     def venv_dir(self):
+        if "venv_dir" in self.overrides:
+            return Path(self.overrides["venv_dir"])
         return self.repository_dir / ".venv"
 
     @property
     def ui_dir(self):
+        if "ui_dir" in self.overrides:
+            return Path(self.overrides["ui_dir"])
         assert self.repository
         return self.repository_dir / "ui"
 
     @property
     def shared_dir(self):
+        if "shared_dir" in self.overrides:
+            return Path(self.overrides["shared_dir"])
         assert self.repository
         return self.repository_dir / "common"
 
     @property
     def models_dir(self):
+        if "models_dir" in self.overrides:
+            return Path(self.overrides["models_dir"])
         assert self.repository
         return self.repository_dir / "models"
 
     @property
     def invenio_instance_path(self):
+        if "invenio_instance_path" in self.overrides:
+            return Path(self.overrides["invenio_instance_path"])
         return self.venv_dir / "var" / "instance"
 
     @property
