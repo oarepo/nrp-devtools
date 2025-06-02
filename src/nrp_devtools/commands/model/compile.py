@@ -220,3 +220,16 @@ def add_requirements_and_entrypoints(
 def add_model_to_i18n(config: OARepoConfig, *, model, **kwargs):
     i18n_config = config.i18n
     i18n_config.babel_source_paths.append(model.model_name)
+
+
+
+def run_make_translations(config: OARepoConfig, **kwargs):
+    """Run make-translations to generate and compile localization messages after model compilation."""
+    click.secho("Running make-translations to update localization files", fg="yellow")
+
+    try:
+        run_cmdline("make-translations")
+        click.secho("Localization files successfully updated", fg="green")
+    except Exception as e:
+        click.secho(f"Warning: make-translations failed: {e}", fg="yellow")
+        click.secho("Continuing without updating localization files", fg="yellow")
