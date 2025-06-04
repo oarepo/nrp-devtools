@@ -11,6 +11,7 @@ from ..commands.model.compile import (
     compile_model_to_tempdir,
     copy_compiled_model,
     install_model_compiler,
+    run_make_translations,
 )
 from ..commands.model.create import create_model
 from ..commands.resolver import get_resolver
@@ -108,4 +109,5 @@ def compile_model_command(
         make_step(add_requirements_and_entrypoints, model=model, tempdir=tempdir),
         make_step(lambda config: get_resolver(config).install_python_repository()),
         make_step(add_model_to_i18n, model=model),
+        make_step(run_make_translations),
     )
