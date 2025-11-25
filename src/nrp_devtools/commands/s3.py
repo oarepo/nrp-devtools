@@ -70,7 +70,7 @@ def fix_s3_bucket_exists(config: OARepoConfig, context=None, **kwargs):
 
     bucket_name = "default"
 
-    client.make_bucket(bucket_name)
+    client.make_bucket(bucket_name=bucket_name)
 
     # make the repository info reinitialize during the next check
     context.pop("repository_info")
