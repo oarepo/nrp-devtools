@@ -252,7 +252,7 @@ def check_docker_s3(config, context):
     (host, port, *_) = split_url(endpoint_url)
 
     client = Minio(
-        f"{host}:{port}",
+        endpoint=f"{host}:{port}",
         access_key=access_key,
         secret_key=secret_key,
         secure=False,
