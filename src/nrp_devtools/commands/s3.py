@@ -14,7 +14,7 @@ def check_s3_location_in_database(
     s3_location_status = get_repository_info(config, context)["files"]
     if s3_location_status == "default_location_missing":
         check_failed(
-            f"S3 location is missing from the database.",
+            "S3 location is missing from the database.",
             will_fix=will_fix,
         )
 
@@ -62,7 +62,7 @@ def fix_s3_bucket_exists(config: OARepoConfig, context=None, **kwargs):
     port = parsed_s3_endpoint_url.port
 
     client = Minio(
-        f"{host}:{port}",
+        endpoint=f"{host}:{port}",
         access_key=access_key,
         secret_key=secret_key,
         secure=False,
